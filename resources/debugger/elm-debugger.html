@@ -1,0 +1,158 @@
+<html>
+<head>
+</head>
+<body>
+	<h1>Elm Debugger</h1>
+	<!-- <h3>Nodes</h3> -->
+	<button id="buttonReset">Reset</button>
+	<button id="buttonPlay">Play</button>
+	<div id="canvas" style="height: 400px; width: 400px;"></div>
+	<div style='display: none;'><dl id='inputs'></dl></div>
+
+<script src="/debugger/viz.js"></script>
+<script>
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
+
+function findChild(parent, elemType) {
+	for (var i = 0; i < parent.childNodes.length; i++) {
+		var child = parent.childNodes[i];
+		if (child.nodeType == 1 && child.nodeName == elemType) {
+			return child;
+		}
+	}
+}
+
+function clearSvgTooltips(nodeList) {
+	for (var i = 0; i < nodeList.length; i++) {
+		nodeList.item(i).textContent = '';
+	}
+}
+
+function pageLoaded() {
+	var elm = parent.output.runningElmModule.elm;
+	function elmShow(obj) {
+		return elm.Native.List.toArray(elm.Native.Show.show(obj)).join("");
+	}
+
+	elm.Main.main.name = "main";
+
+	var allInputs = filterReachableNodes(elm.inputs, elm.Main.main);
+	allInputs.sort(function(a, b) {
+		if (a.id < b.id) {
+			return -1;
+		}
+		return 1;
+	});
+
+	elm.nodes = {};
+	allInputs.forEach(function(x) {
+		elm.nodes[x.id] = x;
+	});
+
+
+	var inputDiv = document.getElementById('inputs');
+	var sceneGraphDiv = document.getElementById('canvas');
+
+	setInterval(function() {
+		inputDiv.innerHTML = '';
+		allInputs.forEach(function(input) {
+			var b = document.createElement("dt");
+			b.appendChild(document.createTextNode(input.name + ": " + input.id));
+			inputDiv.appendChild(b);
+
+			var stringValue = elmShow(input.value);
+			var value = document.createElement("dd");
+			value.appendChild(document.createTextNode(stringValue));
+			inputDiv.appendChild(value);
+
+			if (input.name == 'main') {
+				stringValue = 'main';
+			}
+			var dotNode = document.getElementById('svgNode' + input.id);
+			if (dotNode) {
+				findChild(dotNode, 'text').textContent = stringValue.length > 10 ? stringValue.substr(0, 10) + "..." : stringValue;
+				findChild(dotNode, 'title').textContent = stringValue.replace(/,/g, ',\n');
+			}
+		});
+	}, 100);
+
+	var dotLines = [];
+
+ 	allInputs.forEach(function(node) {
+ 		// dotLines.push(node.id + ' [id="svgNode' + node.id + '", label="' + "_______" + '"];');
+ 		var shape = "ellipse";
+ 		if (node.nodeType == 'input') {
+ 			shape = 'hexagon';
+ 		} else if (node.nodeType == 'lift') {
+ 			shape = 'invtrapezium';
+ 		} else if (node.nodeType == 'foldp') {
+ 			shape = 'invhouse';
+ 		} else if (node.nodeType == 'sampleOn') {
+ 			shape = 'triangle';
+ 		}
+
+ 		dotLines.push('{0} [id="svgNode{0}", label="_______", shape="{1}"];'.format(node.id, shape))
+
+ 		node.kids.forEach(function(child) {
+ 			if (elm.nodes.hasOwnProperty(child.id)) {
+ 				var edgeStyle = 'solid';
+ 				if (child.nodeType == 'sampleOn' && child.indirectParent === node) {
+ 					edgeStyle = 'dashed';
+ 				}
+				dotLines.push('{0} -> {1} [style="{2}"];'.format(node.id, child.id, edgeStyle));
+			}
+ 		});
+	});
+	var graphVizString = "digraph {" + dotLines.join('\n') + "}";
+	console.log(graphVizString);	
+	var svg = Viz(graphVizString, "svg");
+	sceneGraphDiv.innerHTML = svg;
+	clearSvgTooltips(sceneGraphDiv.getElementsByTagName('title'));
+};
+
+function filterReachableNodes(nodes, reachTo) {
+  var queue = nodes.concat();
+  var reachable = [];
+
+  function isReachable(node) {
+  	if (node === reachTo) {
+  		return true;
+  	}
+
+  	for (var i=0; i < node.kids.length; i++) {
+  		if (isReachable(node.kids[i])) {
+  			return true;
+  		}
+  	}
+  	return false;
+  }
+
+  while (queue.length > 0) {
+  	var node = queue.pop();
+  	if (reachable.indexOf(node) == -1 && isReachable(node)) {
+  		queue = queue.concat(node.kids);
+  		reachable.push(node);
+  	}
+  }
+
+  return reachable;
+};
+
+var Elm = parent.frames[2].Elm;
+document.getElementById('buttonReset').addEventListener('click', function(e) {
+	console.log("Reset");
+	Elm.debuggerReset();
+});
+</script>
+</body>
+</html>

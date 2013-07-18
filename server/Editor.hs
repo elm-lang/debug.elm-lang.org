@@ -29,6 +29,7 @@ ideBuilder cols title input output =
       preEscapedToMarkup $ 
          concat [ "<frameset cols=\"" ++ cols ++ "\">\n"
                 , "  <frame name=\"input\" src=\"/code/", input, "\" />\n"
+                , "  <frame name=\"debug\" src=\"/debugger/elm-debugger.html\" />\n"
                 , "  <frame name=\"output\" src=\"", output, "\" />\n"
                 , "</frameset>" ]
 
