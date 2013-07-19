@@ -6,6 +6,7 @@
 	<!-- <h3>Nodes</h3> -->
 	<button id="buttonReset">Reset</button>
 	<button id="buttonPlay">Play</button>
+	<button id="buttonStep">Step</button>
 	<div id="canvas" style="height: 400px; width: 400px;"></div>
 	<div style='display: none;'><dl id='inputs'></dl></div>
 
@@ -152,6 +153,15 @@ var Elm = parent.frames[2].Elm;
 document.getElementById('buttonReset').addEventListener('click', function(e) {
 	console.log("Reset");
 	Elm.debuggerReset();
+});
+document.getElementById('buttonPlay').addEventListener('click', function(e) {
+	console.log("Play");
+	Elm.debuggerRestart();
+});
+
+document.getElementById('buttonStep').addEventListener('click', function(e) {
+	console.log("Step");
+	Elm.debuggerStep();
 });
 </script>
 </body>
