@@ -36,7 +36,6 @@ elmToHtml name src =
           Left err ->
               H.span ! A.style "font-family: monospace;" $
               mapM_ (\line -> preEscapedToMarkup (addSpaces line) >> H.br) (lines err)
-        googleAnalytics
 
 addSpaces str =
   case str of
