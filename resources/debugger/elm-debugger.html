@@ -149,20 +149,31 @@ function filterReachableNodes(nodes, reachTo) {
   return reachable;
 };
 
-var Elm = parent.frames[2].Elm;
-document.getElementById('buttonReset').addEventListener('click', function(e) {
-	console.log("Reset");
-	Elm.debuggerReset();
-});
-document.getElementById('buttonPlay').addEventListener('click', function(e) {
-	console.log("Play");
-	Elm.debuggerRestart();
-});
 
-document.getElementById('buttonStep').addEventListener('click', function(e) {
-	console.log("Step");
-	Elm.debuggerStep();
-});
+function startDebugging(elmWindow) {
+	console.log("Debugger started");
+	var elmDebugger = elmWindow.Elm.Debugger;
+	document.getElementById('buttonReset').addEventListener('click', function(e) {
+		console.log("Reset");
+		elmDebugger.reset();
+	});
+	document.getElementById('buttonPlay').addEventListener('click', function(e) {
+		console.log("Play");
+		elmDebugger.restart();
+	});
+
+	document.getElementById('buttonStep').addEventListener('click', function(e) {
+		console.log("Step");
+		elmDebugger.step();
+	});
+}
+
+parent.window.addEventListener("message", function(e) {
+	if (e.data == "elmDebuggerInit") {
+		startDebugging(e.source);
+	}
+}, false);
+
 </script>
 </body>
 </html>
