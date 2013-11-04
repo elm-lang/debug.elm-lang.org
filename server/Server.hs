@@ -82,10 +82,7 @@ open fp =
 
 serveEditor :: ServerPart Response
 serveEditor = do
-  cols <- getDataFn (look "cols")
-  uriRest . withFile . ide $ case cols of
-                               Left _    -> "50%,50%"
-                               Right str -> str
+  uriRest . withFile $ ide
 
 -- | Do something with the contents of a File.
 withFile :: (FilePath -> String -> Html) -> FilePath -> ServerPart Response
