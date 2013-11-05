@@ -16,15 +16,27 @@ function hotSwap() {
             && request.status < 300) {
             var result = JSON.parse(request.responseText);
             var top = self.parent;
-            if (js = result.success) {
+            var js = result.success;
+            if (js) {
                 var error = top.output.document.getElementById('ErrorMessage');
                 if (error) {
                     error.parentNode.removeChild(error);
                 }
                 top.output.eval(js);
-                var module = js.substring(0,js.indexOf('=')).replace(/\s/g,'');
-                top.output.runningElmModule =
-                    top.output.runningElmModule.swap(top.output.eval(module));
+                var moduleStr = js.substring(0,js.indexOf('=')).replace(/\s/g,'');
+                var module = top.output.eval(moduleStr);
+                if (top.output.Elm.Debugger) {
+                    var debuggerState = top.output.Elm.Debugger.getHotSwapState();
+                    top.output.runningElmModule.dispose();
+                    top.output.Elm.Debugger.dispose();
+
+                    var wrappedModule = top.output.Elm.debuggerAttach(module, debuggerState);
+                    top.output.runningElmModule = top.output.Elm.fullscreen(wrappedModule);
+                }
+                else {
+                    top.output.runningElmModule =
+                        top.output.runningElmModule.swap(module);
+                }
             } else {
                 var error = top.output.document.getElementById('ErrorMessage');
                 if (!error) {
