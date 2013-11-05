@@ -156,7 +156,7 @@ var elmDebugger = null;
 var timeSlider = document.getElementById("timeSlider");
 timeSlider.addEventListener('change', function(e) {
 	console.log("Time sliding");
-	elmDebugger.stepTo(timeSlider.value);
+	elmDebugger.stepTo(+timeSlider.value);
 });
 document.getElementById('buttonRestart').addEventListener('click', function(e) {
 	console.log("Restart");
