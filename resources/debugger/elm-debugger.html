@@ -4,11 +4,11 @@
 <body>
 	<h1>Elm Debugger</h1>
 	<!-- <h3>Nodes</h3> -->
-	<div><input type=range step=1 min=0 max=0 style="width: 100%"/>
+	<div><input id="timeSlider" type=range value=0 step=1 min=0 max=0 style="width: 100%"/>
 	</div>
 	<button id="buttonRestart">Restart</button>
 	<button id="buttonPause">Pause</button>
-	<!-- <button id="buttonContinue">Continue</button> -->
+	<button id="buttonContinue" style="display: none;">Continue</button>
 	<button id="buttonStep">Step</button>
 	<div id="canvas" style="height: 400px; width: 400px;"></div>
 	<div style='display: none;'><dl id='inputs'></dl></div>
@@ -153,13 +153,20 @@ function filterReachableNodes(nodes, reachTo) {
 };
 
 var elmDebugger = null;
+var timeSlider = document.getElementById("timeSlider");
+timeSlider.addEventListener('change', function(e) {
+	console.log("Time sliding");
+	elmDebugger.stepTo(timeSlider.value);
+});
 document.getElementById('buttonRestart').addEventListener('click', function(e) {
 	console.log("Restart");
 	elmDebugger.restart();
+	refreshDebuggerUI();
 });
 document.getElementById('buttonPause').addEventListener('click', function(e) {
 	console.log("Pause");
 	elmDebugger.pause();
+	refreshDebuggerUI();
 });
 document.getElementById('buttonContinue').addEventListener('click', function(e) {
 	console.log("Continue");
@@ -171,6 +178,18 @@ document.getElementById('buttonStep').addEventListener('click', function(e) {
 });
 
 
+function refreshDebuggerUI() {
+	console.log("Refresh debugger");
+	timeSlider.max = elmDebugger.getMaxSteps();
+	if (elmDebugger.getPaused()) {
+		timeSlider.disabled = false;
+	}
+	else {
+		timeSlider.disabled = true;
+		timeSlider.value = timeSlider.max;
+	}
+}
+
 function startDebugging(elmWindow) {
 	console.log("Debugger started");
 	elmDebugger = elmWindow.Elm.Debugger;
@@ -179,6 +198,9 @@ function startDebugging(elmWindow) {
 parent.window.addEventListener("message", function(e) {
 	if (e.data == "elmDebuggerInit") {
 		startDebugging(e.source);
+	}
+	else if (e.data == "elmNotify") {
+		refreshDebuggerUI();
 	}
 }, false);
 
