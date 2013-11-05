@@ -152,7 +152,16 @@ function filterReachableNodes(nodes, reachTo) {
   return reachable;
 };
 
-var elmDebugger = null;
+var elmDebugger = {
+	restart: function() {},
+	pause: function() {},
+	kontinue: function() {},
+	getMaxSteps: function() { return 0; },
+	stepTo: function(i) {},
+	getPaused: function() { return false; },
+	getHotSwapState: function() { return null; }
+};
+
 var timeSlider = document.getElementById("timeSlider");
 timeSlider.addEventListener('change', function(e) {
 	console.log("Time sliding");
