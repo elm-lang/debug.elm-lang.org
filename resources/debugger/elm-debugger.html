@@ -4,8 +4,11 @@
 <body>
 	<h1>Elm Debugger</h1>
 	<!-- <h3>Nodes</h3> -->
-	<button id="buttonReset">Reset</button>
-	<button id="buttonPlay">Play</button>
+	<div><input type=range step=1 min=0 max=0 style="width: 100%"/>
+	</div>
+	<button id="buttonRestart">Restart</button>
+	<button id="buttonPause">Pause</button>
+	<button id="buttonContinue">Continue</button>
 	<button id="buttonStep">Step</button>
 	<div id="canvas" style="height: 400px; width: 400px;"></div>
 	<div style='display: none;'><dl id='inputs'></dl></div>
@@ -149,23 +152,28 @@ function filterReachableNodes(nodes, reachTo) {
   return reachable;
 };
 
+var elmDebugger = null;
+document.getElementById('buttonRestart').addEventListener('click', function(e) {
+	console.log("Restart");
+	elmDebugger.restart();
+});
+document.getElementById('buttonPause').addEventListener('click', function(e) {
+	console.log("Pause");
+	elmDebugger.pause();
+});
+document.getElementById('buttonContinue').addEventListener('click', function(e) {
+	console.log("Continue");
+	elmDebugger.kontinue();
+});
+document.getElementById('buttonStep').addEventListener('click', function(e) {
+	console.log("Step");
+	elmDebugger.step();
+});
+
 
 function startDebugging(elmWindow) {
 	console.log("Debugger started");
-	var elmDebugger = elmWindow.Elm.Debugger;
-	document.getElementById('buttonReset').addEventListener('click', function(e) {
-		console.log("Reset");
-		elmDebugger.reset();
-	});
-	document.getElementById('buttonPlay').addEventListener('click', function(e) {
-		console.log("Play");
-		elmDebugger.restart();
-	});
-
-	document.getElementById('buttonStep').addEventListener('click', function(e) {
-		console.log("Step");
-		elmDebugger.step();
-	});
+	elmDebugger = elmWindow.Elm.Debugger;
 }
 
 parent.window.addEventListener("message", function(e) {
