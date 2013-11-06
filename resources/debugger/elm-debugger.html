@@ -125,32 +125,17 @@ function pageLoaded() {
 };
 
 function filterReachableNodes(nodes, reachTo) {
-  var queue = nodes.concat();
-  var reachable = [];
-
   function isReachable(node) {
   	if (node === reachTo) {
   		return true;
   	}
-
-  	for (var i=0; i < node.kids.length; i++) {
-  		if (isReachable(node.kids[i])) {
-  			return true;
-  		}
-  	}
-  	return false;
+  	return node.kids.some(isReachable);
   }
-
-  while (queue.length > 0) {
-  	var node = queue.pop();
-  	if (reachable.indexOf(node) == -1 && isReachable(node)) {
-  		queue = queue.concat(node.kids);
-  		reachable.push(node);
-  	}
-  }
-
-  return reachable;
+  return nodes.filter(isReachable);
 };
+
+
+
 
 var elmDebugger = {
 	restart: function() {},
