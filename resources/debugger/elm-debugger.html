@@ -10,9 +10,17 @@
 	<button id="buttonPause">Pause</button>
 	<button id="buttonContinue" style="display: none;">Continue</button>
 	<button id="buttonStep">Step</button>
-	<div id="canvas" style="height: 400px; width: 400px;"></div>
+	<div id="signalGraphView"></div>
 	<div style='display: none;'><dl id='inputs'></dl></div>
 
+<style>
+#signalGraphView {
+	-webkit-transform: scale(0.5);
+	-webkit-transform-origin: 0% 0%;
+	-moz-transform: scale(0.5);
+	-moz-transform-origin: 0% 0%;
+}
+</style>
 <script src="/debugger/viz.js"></script>
 <script>
 if (!String.prototype.format) {
@@ -42,30 +50,26 @@ function clearSvgTooltips(nodeList) {
 	}
 }
 
-function pageLoaded() {
-	var elm = parent.output.runningElmModule.elm;
+function createSignalGraphView(Elm, elmDebugger) {
+	var Prelude = Elm.Prelude.make({});
 	function elmShow(obj) {
-		return elm.Native.List.toArray(elm.Native.Show.show(obj)).join("");
+		return Prelude.show(obj);
 	}
 
-	elm.Main.main.name = "main";
+	var mainNode = elmDebugger.mainNode;
+	mainNode.name = "main";
 
-	var allInputs = filterReachableNodes(elm.inputs, elm.Main.main);
-	allInputs.sort(function(a, b) {
-		if (a.id < b.id) {
-			return -1;
-		}
-		return 1;
-	});
+	var allInputs = filterReachableNodes(elmDebugger.allNodes, elmDebugger.mainNode);
+	allInputs.sort(function(a, b) { return (a.id < b.id) ? -1 : 1; });
 
-	elm.nodes = {};
+	var nodesById = {};
 	allInputs.forEach(function(x) {
-		elm.nodes[x.id] = x;
+		nodesById[x.id] = x;
 	});
 
 
 	var inputDiv = document.getElementById('inputs');
-	var sceneGraphDiv = document.getElementById('canvas');
+	var sceneGraphDiv = document.getElementById('signalGraphView');
 
 	setInterval(function() {
 		inputDiv.innerHTML = '';
@@ -108,7 +112,7 @@ function pageLoaded() {
  		dotLines.push('{0} [id="svgNode{0}", label="_______", shape="{1}"];'.format(node.id, shape))
 
  		node.kids.forEach(function(child) {
- 			if (elm.nodes.hasOwnProperty(child.id)) {
+ 			if (nodesById.hasOwnProperty(child.id)) {
  				var edgeStyle = 'solid';
  				if (child.nodeType == 'sampleOn' && child.indirectParent === node) {
  					edgeStyle = 'dashed';
@@ -187,6 +191,7 @@ function refreshDebuggerUI() {
 function startDebugging(elmWindow) {
 	console.log("Debugger started");
 	elmDebugger = elmWindow.Elm.Debugger;
+	createSignalGraphView(elmWindow.Elm, elmDebugger);
 }
 
 parent.window.addEventListener("message", function(e) {
