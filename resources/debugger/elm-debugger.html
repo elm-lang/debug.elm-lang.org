@@ -74,16 +74,6 @@ function createSignalGraphView(Elm, elmDebugger) {
 
 	var sceneGraphDiv = document.getElementById('signalGraphView');
 
-	setInterval(function() {
-		allInputs.forEach(function(node) {
-			var dotNode = document.getElementById('svgNode' + node.id);
-			if (dotNode) {
-				findChild(dotNode, 'text').textContent = nodeValueToString(node);
-				findChild(dotNode, 'title').textContent = node.id.toString();
-			}
-		});
-	}, 100);
-
 	var dotLines = [];
 
  	allInputs.forEach(function(node) {
@@ -121,6 +111,20 @@ function createSignalGraphView(Elm, elmDebugger) {
 	var svg = Viz(graphVizString, "svg");
 	sceneGraphDiv.innerHTML = svg;
 	clearSvgTooltips(sceneGraphDiv.getElementsByTagName('title'));
+
+	function updateValues() {
+		allInputs.forEach(function(node) {
+			var dotNode = document.getElementById('svgNode' + node.id);
+			if (dotNode) {
+				findChild(dotNode, 'text').textContent = nodeValueToString(node);
+				findChild(dotNode, 'title').textContent = node.id.toString();
+			}
+		});
+	}
+
+	return {
+		updateValues: updateValues
+	};
 };
 
 function filterReachableNodes(nodes, reachTo) {
@@ -146,10 +150,15 @@ var elmDebugger = {
 	getHotSwapState: function() { return null; }
 };
 
+var signalGraphView = {
+	updateValues: function() {}
+}
+
 var timeSlider = document.getElementById("timeSlider");
 timeSlider.addEventListener('change', function(e) {
 	console.log("Time sliding");
 	elmDebugger.stepTo(+timeSlider.value);
+	signalGraphView.updateValues();
 });
 document.getElementById('buttonRestart').addEventListener('click', function(e) {
 	console.log("Restart");
@@ -172,7 +181,7 @@ document.getElementById('buttonStep').addEventListener('click', function(e) {
 
 
 function refreshDebuggerUI() {
-	console.log("Refresh debugger");
+	signalGraphView.updateValues();
 	timeSlider.max = elmDebugger.getMaxSteps();
 	if (elmDebugger.getPaused()) {
 		timeSlider.disabled = false;
@@ -186,7 +195,7 @@ function refreshDebuggerUI() {
 function startDebugging(elmWindow) {
 	console.log("Debugger started");
 	elmDebugger = elmWindow.Elm.Debugger;
-	createSignalGraphView(elmWindow.Elm, elmDebugger);
+	signalGraphView = createSignalGraphView(elmWindow.Elm, elmDebugger);
 }
 
 parent.window.addEventListener("message", function(e) {
