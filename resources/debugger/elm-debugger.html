@@ -75,13 +75,11 @@ function createSignalGraphView(Elm, elmDebugger) {
 	var sceneGraphDiv = document.getElementById('signalGraphView');
 
 	setInterval(function() {
-		allInputs.forEach(function(input) {
-			var stringValue = nodeValueToString(input);
-
-			var dotNode = document.getElementById('svgNode' + input.id);
+		allInputs.forEach(function(node) {
+			var dotNode = document.getElementById('svgNode' + node.id);
 			if (dotNode) {
-				findChild(dotNode, 'text').textContent = stringValue;
-				findChild(dotNode, 'title').textContent = input.id.toString();
+				findChild(dotNode, 'text').textContent = nodeValueToString(node);
+				findChild(dotNode, 'title').textContent = node.id.toString();
 			}
 		});
 	}, 100);
