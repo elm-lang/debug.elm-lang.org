@@ -54,28 +54,19 @@ function clearSvgTooltips(nodeList) {
 function createSignalGraphView(Elm, elmDebugger) {
 	var Prelude = Elm.Prelude.make({});
 	function nodeValueToString(node) {
-		if (node.name == 'main') {
+		if (node === elmDebugger.mainNode) {
 			return 'main';
 		}
 		return Prelude.show(node.value);
 	}
 
-	var mainNode = elmDebugger.mainNode;
-	mainNode.name = "main";
-
 	var allInputs = filterReachableNodes(elmDebugger.allNodes, elmDebugger.mainNode);
-	allInputs.sort(function(a, b) { return (a.id < b.id) ? -1 : 1; });
-
 	var nodesById = {};
 	allInputs.forEach(function(x) {
 		nodesById[x.id] = x;
 	});
 
-
-	var sceneGraphDiv = document.getElementById('signalGraphView');
-
 	var dotLines = [];
-
  	allInputs.forEach(function(node) {
  		var shape = "ellipse";
  		if (node.nodeType == 'input') {
@@ -106,19 +97,17 @@ function createSignalGraphView(Elm, elmDebugger) {
 			}
  		});
 	});
+
+	var sceneGraphDiv = document.getElementById('signalGraphView');
 	var graphVizString = "digraph {" + dotLines.join('\n') + "}";
-	console.log(graphVizString);	
-	var svg = Viz(graphVizString, "svg");
-	sceneGraphDiv.innerHTML = svg;
+	sceneGraphDiv.innerHTML = Viz(graphVizString, "svg");
 	clearSvgTooltips(sceneGraphDiv.getElementsByTagName('title'));
 
 	function updateValues() {
 		allInputs.forEach(function(node) {
 			var dotNode = document.getElementById('svgNode' + node.id);
-			if (dotNode) {
-				findChild(dotNode, 'text').textContent = nodeValueToString(node);
-				findChild(dotNode, 'title').textContent = node.id.toString();
-			}
+			findChild(dotNode, 'text').textContent = nodeValueToString(node);
+			findChild(dotNode, 'title').textContent = node.id.toString();
 		});
 	}
 
