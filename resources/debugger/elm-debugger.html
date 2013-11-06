@@ -115,7 +115,8 @@ function createSignalGraphView(Elm, elmDebugger) {
  		}
 
  		var initialLabel = nodeValueToString(node).replace(/"/g, '_');
- 		dotLines.push('{0} [id="svgNode{0}", label="{1}", shape="{2}"];'.format(node.id, initialLabel, shape))
+ 		var labelPadding = new Array(Math.ceil(initialLabel.length/2)).join("_");
+ 		dotLines.push('{0} [id="svgNode{0}", label="{1}", shape="{2}"];'.format(node.id, initialLabel + labelPadding, shape))
 
  		node.kids.forEach(function(child) {
  			if (nodesById.hasOwnProperty(child.id)) {
