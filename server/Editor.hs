@@ -26,10 +26,12 @@ ideBuilder title input output =
       H.head $ do
         H.title . toHtml $ title
       preEscapedToMarkup $ 
-         concat [ "<frameset cols=\"33%,33%,34%\">\n"
-                , "  <frame name=\"input\" src=\"/code/", input, "\" />\n"
+         concat [ "<frameset cols=\"40%,60%\">\n"
+                , "  <frameset rows=\"50%,50%\">\n"
+                , "    <frame name=\"input\" src=\"/code/", input, "\" />\n"
+                , "    <frame name=\"output\" src=\"", output, "\" />\n"
+                , "  </frameset>"
                 , "  <frame name=\"debug\" src=\"/debugger/elm-debugger.html\" />\n"
-                , "  <frame name=\"output\" src=\"", output, "\" />\n"
                 , "</frameset>" ]
 
 -- | list of themes to use with CodeMirror
