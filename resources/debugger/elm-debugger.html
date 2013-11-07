@@ -2,24 +2,31 @@
 <head>
 </head>
 <body>
-	<h1>Elm Debugger</h1>
-	<!-- <h3>Nodes</h3> -->
-	<div><input id="timeSlider" type=range value=0 step=1 min=0 max=0 style="width: 100%"/>
-	</div>
 	<button id="buttonRestart">Restart</button>
 	<button id="buttonPause">Pause</button>
 	<button id="buttonContinue" style="display: none;">Continue</button>
-	<button id="buttonStep">Step</button>
-	<div id="signalGraphView"></div>
+	<div>
+		<input id="timeSlider" type=range value=0 step=1 min=0 max=0/>
+	</div>
+	<div id="signalGraphParent">
+		<div id="signalGraphView"></div>
+	</div>
 
 <style>
+#signalGraphParent {
+	overflow: scroll;
+	width: 100%;
+}
+
 #signalGraphView {
 	-webkit-transform: scale(0.7);
 	-webkit-transform-origin: 0% 0%;
 	-moz-transform: scale(0.5);
 	-moz-transform-origin: 0% 0%;
-	width: 0;
-	height: 0;
+}
+
+#timeSlider {
+	width: 100%;
 }
 </style>
 <script src="/debugger/viz.js"></script>
@@ -111,6 +118,9 @@ function createSignalGraphView(Elm, elmDebugger) {
 		});
 	}
 
+	// replace initialLabel with real value
+	updateValues();
+
 	return {
 		updateValues: updateValues
 	};
@@ -162,10 +172,6 @@ document.getElementById('buttonPause').addEventListener('click', function(e) {
 document.getElementById('buttonContinue').addEventListener('click', function(e) {
 	console.log("Continue");
 	elmDebugger.kontinue();
-});
-document.getElementById('buttonStep').addEventListener('click', function(e) {
-	console.log("Step");
-	elmDebugger.step();
 });
 
 
