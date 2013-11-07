@@ -74,8 +74,10 @@ function createSignalGraphView(Elm, elmDebugger) {
 	});
 
 	var dotLines = [];
+	var usedNodeTypes = {};
 	allInputs.forEach(function(node) {
 		var shape = getShapeForNodeType(node.nodeType);
+		usedNodeTypes[node.nodeType] = 1;
 
 		var initialLabel = nodeValueToString(node).replace(/"/g, '_');
 		var labelPadding = new Array(Math.ceil(initialLabel.length/2)).join("_");
@@ -92,18 +94,22 @@ function createSignalGraphView(Elm, elmDebugger) {
 		});
 	});
 
-	var nodeTypes = ['input', 'lift', 'foldp', 'sampleOn', 'dropRepeats'];
-	subgraphLines = [];
-	for (var i=0; i < nodeTypes.length; i++) {
-		var type = nodeTypes[i];
+	var legendNodeTypes = Object.keys(usedNodeTypes).sort().filter(function(x) {
+		var shownInLegend = ['input', 'lift', 'foldp', 'sampleOn', 'dropRepeats', 'merge'];
+		return shownInLegend.indexOf(x) >= 0;
+	});
+	legendLines = [];
+	for (var i=0; i < legendNodeTypes.length; i++) {
+		var type = legendNodeTypes[i];
 		dotLines.push('legend{0} [id="legend{0}", label="{1}", shape="{2}"];'.format(i, type, getShapeForNodeType(type)));
-		subgraphLines.push('legend{0};'.format(i));
-		if (i > 0 && i % 2 == 1) {
-			subgraphLines.push('legend{0} -> legend{1} [style=invis];'.format(i-1, i));
+		legendLines.push('legend{0};'.format(i));
+		if (i % 2 == 1) {
+			legendLines.push('legend{0} -> legend{1} [style=invis];'.format(i-1, i));
 		}
 	}
-	dotLines.push('subgraph cluster0 { style=filled; color=lightgrey; node [style=filled,color=white]; label = "Legend";');
-	dotLines.push(subgraphLines.join('\n'));
+	dotLines.push('subgraph cluster0 {');
+	dotLines.push('style=filled; color=lightgrey; node [style=filled,color=white]; label = "Legend";');
+	dotLines.push(legendLines.join('\n'));
 	dotLines.push('}');
 
 	var sceneGraphDiv = document.getElementById('signalGraphView');
@@ -145,6 +151,7 @@ function getShapeForNodeType(type) {
 		case 'sampleOn': return 'house';
 		case 'constant': return 'none';
 		case 'dropRepeats': return 'doubleoctagon';
+		case 'merge': return 'invtriangle';
 		default: return 'ellipse';
 	}
 }
