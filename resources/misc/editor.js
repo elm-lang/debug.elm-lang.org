@@ -37,20 +37,6 @@ function hotSwap() {
                     top.output.runningElmModule =
                         top.output.runningElmModule.swap(module);
                 }
-            } else {
-                var error = top.output.document.getElementById('ErrorMessage');
-                if (!error) {
-                    error = document.createElement('div');
-                    error.id = 'ErrorMessage';
-                    error.style.fontFamily = 'monospace';
-                    error.style.position = 'absolute';
-                    error.style.bottom = '0';
-                    error.style.width = '100%';
-                    error.style.backgroundColor = 'rgba(245,245,245,0.95)';
-                }
-                error.innerHTML = '<b>Hot Swap Failed</b><br/>' +
-                    result.error.replace(/\n/g, '<br/>').replace(/  /g, " &nbsp;");
-                top.output.document.body.appendChild(error);
             }
         }
     };
