@@ -208,10 +208,10 @@ var signalGraphView = {
 
 function updateStatus() {
 	if (elmDebugger.getPaused()) {
-		statusText.textContent = "Paused at event {0} of {1}".format(timeSlider.value, timeSlider.max);
+		statusText.textContent = "Paused at event {0} of {1}".format(timeSlider.value, elmDebugger.getMaxSteps());
 	}
 	else {
-		statusText.textContent = "Recorded {0} events".format(timeSlider.max);
+		statusText.textContent = "Recorded {0} events".format(elmDebugger.getMaxSteps());
 	}
 }
 
