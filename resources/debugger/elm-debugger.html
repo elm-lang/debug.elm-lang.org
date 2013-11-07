@@ -75,20 +75,7 @@ function createSignalGraphView(Elm, elmDebugger) {
 
 	var dotLines = [];
  	allInputs.forEach(function(node) {
- 		var shape = "ellipse";
- 		if (node.nodeType == 'input') {
- 			shape = 'hexagon';
- 		} else if (node.nodeType == 'lift') {
- 			shape = 'invtrapezium';
- 		} else if (node.nodeType == 'foldp') {
- 			shape = 'rect';
- 		} else if (node.nodeType == 'sampleOn') {
- 			shape = 'house';
- 		} else if (node.nodeType == 'constant') {
- 			shape = 'none';
- 		} else if (node.nodeType == 'drop') {
- 			shape = 'doubleoctagon';
- 		}
+ 		var shape = getShapeForNodeType(node.nodeType);
 
  		var initialLabel = nodeValueToString(node).replace(/"/g, '_');
  		var labelPadding = new Array(Math.ceil(initialLabel.length/2)).join("_");
@@ -104,6 +91,20 @@ function createSignalGraphView(Elm, elmDebugger) {
 			}
  		});
 	});
+
+	var nodeTypes = ['input', 'lift', 'foldp', 'sampleOn', 'dropRepeats'];
+	subgraphLines = [];
+	for (var i=0; i < nodeTypes.length; i++) {
+		var type = nodeTypes[i];
+		dotLines.push('legend{0} [id="legend{0}", label="{1}", shape="{2}"];'.format(i, type, getShapeForNodeType(type)));
+		subgraphLines.push('legend{0};'.format(i));
+		if (i > 0 && i % 2 == 1) {
+			subgraphLines.push('legend{0} -> legend{1} [style=invis];'.format(i-1, i));
+		}
+	}
+	dotLines.push('subgraph cluster0 { style=filled; color=lightgrey; node [style=filled,color=white]; label = "Legend";');
+	dotLines.push(subgraphLines.join('\n'));
+	dotLines.push('}');
 
 	var sceneGraphDiv = document.getElementById('signalGraphView');
 	var graphVizString = "digraph {" + dotLines.join('\n') + "}";
@@ -134,7 +135,19 @@ function filterReachableNodes(nodes, reachTo) {
   	return node.kids.some(isReachable);
   }
   return nodes.filter(isReachable);
-};
+}
+
+function getShapeForNodeType(type) {
+	switch (type) {
+		case 'input': return 'hexagon';
+		case 'lift': return 'invtrapezium';
+		case 'foldp': return 'rect';
+		case 'sampleOn': return 'house';
+		case 'constant': return 'none';
+		case 'dropRepeats': return 'doubleoctagon';
+		default: return 'ellipse';
+	}
+}
 
 
 
