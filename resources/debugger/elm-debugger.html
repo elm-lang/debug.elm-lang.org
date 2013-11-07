@@ -33,13 +33,13 @@
 <script>
 if (!String.prototype.format) {
   String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) { 
-      return typeof args[number] != 'undefined'
-        ? args[number]
-        : match
-      ;
-    });
+	var args = arguments;
+	return this.replace(/{(\d+)}/g, function(match, number) {
+	  return typeof args[number] != 'undefined'
+		? args[number]
+		: match
+	  ;
+	});
   };
 }
 
@@ -74,22 +74,22 @@ function createSignalGraphView(Elm, elmDebugger) {
 	});
 
 	var dotLines = [];
- 	allInputs.forEach(function(node) {
- 		var shape = getShapeForNodeType(node.nodeType);
+	allInputs.forEach(function(node) {
+		var shape = getShapeForNodeType(node.nodeType);
 
- 		var initialLabel = nodeValueToString(node).replace(/"/g, '_');
- 		var labelPadding = new Array(Math.ceil(initialLabel.length/2)).join("_");
- 		dotLines.push('{0} [id="svgNode{0}", label="{1}", shape="{2}"];'.format(node.id, initialLabel + labelPadding, shape))
+		var initialLabel = nodeValueToString(node).replace(/"/g, '_');
+		var labelPadding = new Array(Math.ceil(initialLabel.length/2)).join("_");
+		dotLines.push('{0} [id="svgNode{0}", label="{1}", shape="{2}"];'.format(node.id, initialLabel + labelPadding, shape))
 
- 		node.kids.forEach(function(child) {
- 			if (nodesById.hasOwnProperty(child.id)) {
- 				var edgeStyle = 'solid';
- 				if (child.nodeType == 'sampleOn' && child.indirectParent === node) {
- 					edgeStyle = 'dashed';
- 				}
+		node.kids.forEach(function(child) {
+			if (nodesById.hasOwnProperty(child.id)) {
+				var edgeStyle = 'solid';
+				if (child.nodeType == 'sampleOn' && child.indirectParent === node) {
+					edgeStyle = 'dashed';
+				}
 				dotLines.push('{0} -> {1} [style="{2}"];'.format(node.id, child.id, edgeStyle));
 			}
- 		});
+		});
 	});
 
 	var nodeTypes = ['input', 'lift', 'foldp', 'sampleOn', 'dropRepeats'];
@@ -129,10 +129,10 @@ function createSignalGraphView(Elm, elmDebugger) {
 
 function filterReachableNodes(nodes, reachTo) {
   function isReachable(node) {
-  	if (node === reachTo) {
-  		return true;
-  	}
-  	return node.kids.some(isReachable);
+	if (node === reachTo) {
+		return true;
+	}
+	return node.kids.some(isReachable);
   }
   return nodes.filter(isReachable);
 }
