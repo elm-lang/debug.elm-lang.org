@@ -84,6 +84,12 @@ function clearSvgTooltips(nodeList) {
 	}
 }
 
+function clearFontFamily(nodeList) {
+	for (var i = 0; i < nodeList.length; i++) {
+		nodeList[i].removeAttribute('font-family');
+	}
+}
+
 function createSignalGraphView(Elm, elmDebugger) {
 	var Prelude = Elm.Prelude.make({});
 	function nodeValueToString(node) {
@@ -142,6 +148,7 @@ function createSignalGraphView(Elm, elmDebugger) {
 	var graphVizString = "digraph {" + dotLines.join('\n') + "}";
 	sceneGraphDiv.innerHTML = Viz(graphVizString, "svg");
 	clearSvgTooltips(sceneGraphDiv.getElementsByTagName('title'));
+	clearFontFamily(sceneGraphDiv.getElementsByTagName('text'));
 
 	function updateValues() {
 		allInputs.forEach(function(node) {
