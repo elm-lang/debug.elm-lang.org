@@ -362,7 +362,7 @@ function setAutoHotSwap(enable, init) {
 
 function updateOutput() {
     clearTimeout(delay);
-    delay = setTimeout(hotSwap, 0);
+    delay = setTimeout(hotSwap, 100);
 }
 
 function setTheme(theme) {
