@@ -232,7 +232,7 @@ function messageForTokenAt(pos) {
 
     var results = lookupDocs(token, pos.line);
     if (results === null) return empty;
-    if (results.isSyntax) {
+    if (results.isSyntax && elmSyntax.hasOwnProperty(results.name)) {
         var info = elmSyntax[results.name];
         var desc = info.message || info;
         var extra = '<p>See the <a href="/learn/Syntax.elm">syntax reference</a> for more information.</p>';
@@ -259,11 +259,7 @@ function messageForTokenAt(pos) {
                  extra: value.desc ? value.desc : '<p>No additional information.</p>' };
     }
 
-    return {
-        message: 'You probably want one of these: ' +
-            results.map(docsLink).join(' or '),
-        extra: '<p>This feature is not yet clever enough to figure out which one.</p>'
-    };
+    return empty;
 }
 
 function updateDocumentation() {
