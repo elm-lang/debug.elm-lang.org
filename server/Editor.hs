@@ -10,29 +10,35 @@ import Network.HTTP.Base (urlEncode)
 import qualified System.FilePath as FP
 
 -- | Display an editor and the compiled result side-by-side.
-ide :: FilePath -> String -> Html
-ide fileName code =
-    ideBuilder ("Elm Editor: " ++ FP.takeBaseName fileName)
+ide :: Bool -> FilePath -> String -> Html
+ide useDebugger fileName code =
+    ideBuilder useDebugger
+               ("Elm Editor: " ++ FP.takeBaseName fileName)
                fileName
                ("/compile?input=" ++ urlEncode code)
 
 -- | Display an editor and the compiled result side-by-side.
 emptyIDE :: Html
-emptyIDE = ideBuilder "Try Elm" "Empty.elm" "/Try.elm"
+emptyIDE = ideBuilder False "Try Elm" "Empty.elm" "/Try.elm"
 
-ideBuilder :: String -> String -> String -> Html
-ideBuilder title input output =
+ideBuilder :: Bool -> String -> String -> String -> Html
+ideBuilder useDebugger title input output =
     H.docTypeHtml $ do
       H.head $ do
         H.title . toHtml $ title
-      preEscapedToMarkup $ 
-         concat [ "<frameset cols=\"40%,60%\">\n"
-                , "  <frameset rows=\"50%,50%\">\n"
-                , "    <frame name=\"input\" src=\"/code/", input, "\" />\n"
-                , "    <frame name=\"output\" src=\"", output, "\" />\n"
-                , "  </frameset>"
-                , "  <frame name=\"debug\" src=\"/debugger/elm-debugger.html\" />\n"
-                , "</frameset>" ]
+      preEscapedToMarkup $
+         if useDebugger
+         then concat [ "<frameset cols=\"40%,60%\">\n"
+                     , "  <frameset rows=\"50%,50%\">\n"
+                     , "    <frame name=\"input\" src=\"/code/", input, "\" />\n"
+                     , "    <frame name=\"output\" src=\"", output, "\" />\n"
+                     , "  </frameset>"
+                     , "  <frame name=\"debug\" src=\"/debugger/elm-debugger.html\" />\n"
+                     , "</frameset>" ]
+         else concat [ "<frameset cols=\"50%,50%\">\n"
+                     , "  <frame name=\"input\" src=\"/code/", input, "\" />\n"
+                     , "  <frame name=\"output\" src=\"", output, "\" />\n"
+                     , "</frameset>" ]
 
 -- | list of themes to use with CodeMirror
 themes = [ "ambiance", "blackboard", "cobalt", "eclipse"

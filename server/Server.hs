@@ -82,7 +82,12 @@ open fp =
 
 serveEditor :: ServerPart Response
 serveEditor = do
-  uriRest . withFile $ ide
+  noDebug <- getDataFn (look "noDebug")
+  let useDebugger = case noDebug of
+                      Left _ -> True
+                      Right _ -> False
+  uriRest . withFile . ide $ useDebugger
+
 
 -- | Do something with the contents of a File.
 withFile :: (FilePath -> String -> Html) -> FilePath -> ServerPart Response
