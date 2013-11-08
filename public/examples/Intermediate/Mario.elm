@@ -41,6 +41,7 @@ render (w',h') mario =
       , rect w 50 |> filled (rgb 74 163 41)
                   |> move (0, 24 - h/2)
       , marioImage
+          |> Debug.tracePath "m"
           |> toForm
           |> move (mario.x, mario.y + groundY)
       ]
