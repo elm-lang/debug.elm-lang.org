@@ -8,7 +8,7 @@ mario = { x=0, y=0, vx=0, vy=0, dir="right" }
 
 -- UPDATE -- ("m" is for Mario)
 jump {y} m = if y > 0 && m.vy == 0
-             then { m | vy <- 6 }
+             then { m | vy <- 6.0 }
              else m
 gravity t m = if m.y > 0
               then { m | vy <- m.vy - 0.5 }
