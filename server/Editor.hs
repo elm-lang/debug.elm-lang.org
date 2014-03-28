@@ -1,9 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Editor (editor,ide,emptyIDE) where
+module Editor (editor,ide,empty) where
 
 import Data.Monoid (mempty)
 import Text.Blaze.Html
-import Text.Blaze.Html5 ((!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 import Network.HTTP.Base (urlEncode)
@@ -18,8 +17,8 @@ ide useDebugger fileName code =
                ("/compile?input=" ++ urlEncode code)
 
 -- | Display an editor and the compiled result side-by-side.
-emptyIDE :: Html
-emptyIDE = ideBuilder False "Try Elm" "Empty.elm" "/Try.elm"
+empty :: Html
+empty = ideBuilder "50%,50%" "Try Elm" "Empty.elm" "/Try.elm"
 
 ideBuilder :: Bool -> String -> String -> String -> Html
 ideBuilder useDebugger title input output =
@@ -41,6 +40,7 @@ ideBuilder useDebugger title input output =
                      , "</frameset>" ]
 
 -- | list of themes to use with CodeMirror
+themes :: [String]
 themes = [ "ambiance", "blackboard", "cobalt", "eclipse"
          , "elegant", "erlang-dark", "lesser-dark", "monokai", "neat", "night"
          , "rubyblue", "solarized", "twilight", "vibrant-ink", "xq-dark" ]
@@ -58,10 +58,10 @@ editor filePath code =
         mapM_ (\theme -> H.link ! A.rel "stylesheet" ! A.href (toValue ("/codemirror-3.x/theme/" ++ theme ++ ".css" :: String))) themes
         H.link ! A.rel "stylesheet" ! A.type_ "text/css" ! A.href "/misc/editor.css"
         H.script ! A.type_ "text/javascript" ! A.src "/misc/showdown.js" $ mempty
-        H.script ! A.type_ "text/javascript" ! A.src "/misc/editor.js?0.10" $ mempty
+        H.script ! A.type_ "text/javascript" ! A.src "/misc/editor.js" $ mempty
       H.body $ do
         H.form ! A.id "inputForm" ! A.action "/compile" ! A.method "post" ! A.target "output" $ do
-           H.div ! A.id "editor_box" $ do
+           H.div ! A.id "editor_box" $
              H.textarea ! A.name "input" ! A.id "input" $ toHtml ('\n':code)
            H.div ! A.id "options" $ do
              bar "documentation" docs
@@ -70,7 +70,7 @@ editor filePath code =
         H.script ! A.type_ "text/javascript" $ "initEditor();"
 
 bar :: AttributeValue -> Html -> Html
-bar id body = H.div ! A.id id ! A.class_ "option" $ body
+bar id' body = H.div ! A.id id' ! A.class_ "option" $ body
 
 buttons :: Html
 buttons = H.div ! A.class_ "valign_kids"
@@ -106,10 +106,10 @@ options :: Html
 options = H.div ! A.class_ "valign_kids"
                 ! A.style "float:left; padding-left:6px; padding-top:2px;"
                 ! A.title "Show documentation and types."
-                $ (docs >> opts)
+                $ (docs' >> opts)
     where 
-      docs = do
-        H.span $ "Hints:"
+      docs' = do
+        H.span "Hints:"
         H.input ! A.type_ "checkbox"
                 ! A.id "show_type_checkbox"
                 ! A.onchange "showType(this.checked);"

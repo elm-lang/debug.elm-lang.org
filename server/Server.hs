@@ -1,34 +1,37 @@
+{-# OPTIONS_GHC -W #-}
 {-# LANGUAGE OverloadedStrings, DeriveDataTypeable #-}
 module Main where
 
-import Prelude hiding (head, span, id, catch)
-import qualified Data.Char as Char
-import qualified Data.List as List
-import Control.Monad
-import Happstack.Server hiding (body,port)
-import Happstack.Server.Compression
-import Happstack.Server.FileServe.BuildingBlocks (serveDirectory')
-import qualified Happstack.Server as Happs
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
+import qualified Data.HashMap.Strict as Map
+import Control.Applicative
+import Control.Monad.Error
 
-import Text.Blaze.Html (Html, toHtml)
-import Text.Blaze.Html.Renderer.String (renderHtml)
-import Control.Monad.Trans (MonadIO(liftIO))
-import Control.Exception
+import Text.Blaze.Html5 ((!))
+import qualified Text.Blaze.Html5 as H
+import qualified Text.Blaze.Html5.Attributes as A
+import qualified Text.Blaze.Html.Renderer.Utf8 as BlazeBS
+import qualified Text.Blaze.Html.Renderer.String as BlazeS
+
+import Snap.Core
+import Snap.Http.Server
+import Snap.Util.FileServe
 import System.Console.CmdArgs
 import System.FilePath as FP
 import System.Process
 import System.Directory
 import GHC.Conc
 
-import qualified Language.Elm as Elm
-import ElmToHtml
-import Editor
-import Utils
+import qualified Elm.Internal.Paths as Elm
+import qualified Generate
+import qualified Editor
 
 data Flags = Flags
   { port :: Int
   } deriving (Data,Typeable,Show,Eq)
 
+flags :: Flags
 flags = Flags
   { port = 8000 &= help "set the port of the server"
   }
@@ -37,125 +40,166 @@ flags = Flags
 main :: IO ()
 main = do
   setNumCapabilities =<< getNumProcessors
-  args <- cmdArgs flags
   putStrLn "Initializing Server"
-  precompile
   getRuntimeAndDocs
-  putStrLn $ "Serving at localhost:" ++ show (port args)
-  simpleHTTP nullConf { Happs.port = port args } $ do
-    compressedResponseFilter
-    let mime = asContentType "text/html; charset=UTF-8"
-    route (serveFile mime "public/build/Elm.elm")
-          (serveDirectory' EnableBrowsing [] mime "public/build")
+  setupLogging
+  precompile
+  cargs <- cmdArgs flags
+  httpServe (setPort (port cargs) defaultConfig) $
+      ifTop (serveElm "public/build/Elm.elm")
+      <|> route [ ("try", serveHtml Editor.empty)
+                , ("edit", edit)
+                , ("code", code)
+                , ("compile", compile)
+                , ("hotswap", hotswap)
+                , ("login", login)
+                ]
+      <|> serveDirectoryWith directoryConfig "public/build"
+      <|> serveDirectoryWith simpleDirectoryConfig "resources"
+      <|> error404
 
-route :: ServerPartT IO Response -> ServerPartT IO Response -> ServerPartT IO Response
-route empty rest = do
-  msum [ nullDir >> empty
-       , serveDirectory DisableBrowsing [] "resources"
-       , dir "try" (ok $ toResponse $ emptyIDE)
-       , dir "compile" $ compilePart (elmToHtml "Compiled Elm")
-       , dir "hotswap" $ compilePart elmToJS
-       , dir "jsondocs" $ serveFile (asContentType "text/json") "resources/docs.json?0.10"
-       , dir "edit" serveEditor
-       , dir "code" . uriRest $ withFile editor
-       , dir "login" sayHi
-       , rest
-       , return404
-       ]
+error404 :: Snap ()
+error404 =
+    do modifyResponse $ setResponseStatus 404 "Not found"
+       serveElm "public/build/Error404.elm"
 
--- | Compile an Elm program that has been POST'd to the server.
-compilePart compile = do
-  decodeBody $ defaultBodyPolicy "/tmp/" 0 10000 1000
-  code <- look "input"
-  ok $ toResponse $ compile code
+serveElm :: FilePath -> Snap ()
+serveElm = serveFileAs "text/html; charset=UTF-8"
 
-open :: String -> ServerPart (Maybe String)
-open fp =
-  do exists <- liftIO (doesFileExist file)
-     if exists then openFile else return Nothing
-  where
-    file = "public/" ++ takeWhile (/='?') fp
-    openFile = liftIO $ catch (fmap Just $ readFile file) handleError
+serveHtml :: MonadSnap m => H.Html -> m ()
+serveHtml html =
+    do setContentType "text/html" <$> getResponse
+       writeLBS (BlazeBS.renderHtml html)
 
-    handleError :: SomeException -> IO (Maybe String)
-    handleError _ = return Nothing
+hotswap :: Snap ()
+hotswap = maybe error404 serve =<< getParam "input"
+    where
+      serve src = do
+        setContentType "application/javascript" <$> getResponse
+        result <- liftIO . Generate.js $ BSC.unpack src
+        writeBS (BSC.pack result)
 
-serveEditor :: ServerPart Response
-serveEditor = do
-  noDebug <- getDataFn (look "noDebug")
-  let useDebugger = case noDebug of
-                      Left _ -> True
-                      Right _ -> False
-  uriRest . withFile . ide $ useDebugger
+compile :: Snap ()
+compile = maybe error404 serve =<< getParam "input"
+    where
+      serve src = do
+        result <- liftIO . Generate.html "Compiled Elm" $ BSC.unpack src
+        serveHtml result
 
+edit :: Snap ()
+edit = do
+  cols <- BSC.unpack . maybe "50%,50%" id <$> getQueryParam "cols"
+  withFile (Editor.ide cols)
 
--- | Do something with the contents of a File.
-withFile :: (FilePath -> String -> Html) -> FilePath -> ServerPart Response
-withFile handler fp = do
-  eitherContent <- open fp
-  case eitherContent of
-    Just content -> ok . toResponse $ handler fp content
-    Nothing -> return404
+code :: Snap ()
+code = withFile Editor.editor
 
-return404 =
-  notFound =<< serveFile (asContentType "text/html; charset=UTF-8") "public/build/Error404.elm"
+withFile :: (FilePath -> String -> H.Html) -> Snap ()
+withFile handler = do
+  path <- BSC.unpack . rqPathInfo <$> getRequest
+  let file = "public/" ++ path         
+  exists <- liftIO (doesFileExist file)
+  if not exists then error404 else
+      do content <- liftIO $ readFile file
+         serveHtml $ handler path content
 
 -- | Simple response for form-validation demo.
-sayHi :: ServerPart Response
-sayHi = do
-  first <- look "first"
-  last  <- look "last"
-  email <- look "email"
-  ok . toResponse $
-     concat [ "Hello, ", first, " ", last
-            , "! Welcome to the fake login-confirmation page.\n\n"
-            , "We will not attempt to contact you at ", email
-            , ".\nIn fact, your (fake?) email has not even been recorded." ]
+login :: Snap ()
+login = do
+  first <- maybe "John" id <$> getQueryParam "first"
+  last' <- maybe "Doe" id <$> getQueryParam "last"
+  email <- maybe "john.doe@example.com" id <$> getQueryParam "email"
+  writeBS $ BS.concat [ "Hello, ", first, " ", last'
+                      , "! Welcome to the fake login-confirmation page.\n\n"
+                      , "We will not attempt to contact you at ", email
+                      , ".\nIn fact, your (fake?) email has not even been recorded." ]
+
+directoryConfig :: MonadSnap m => DirectoryConfig m
+directoryConfig =
+    fancyDirectoryConfig
+    { indexGenerator = defaultIndexGenerator defaultMimeTypes indexStyle
+    , mimeTypes = Map.insert ".elm" "text/html" defaultMimeTypes
+    }
+
+indexStyle :: BS.ByteString
+indexStyle =
+    "body { margin:0; font-family:sans-serif; background:rgb(245,245,245);\
+    \       font-family: calibri, verdana, helvetica, arial; }\
+    \div.header { padding: 40px 50px; font-size: 24px; }\
+    \div.content { padding: 0 40px }\
+    \div.footer { display:none; }\
+    \table { width:100%; border-collapse:collapse; }\
+    \td { padding: 6px 10px; }\
+    \tr:nth-child(odd) { background:rgb(216,221,225); }\
+    \td { font-family:monospace }\
+    \th { background:rgb(90,99,120); color:white; text-align:left;\
+    \     padding:10px; font-weight:normal; }"
+
+setupLogging :: IO ()
+setupLogging =
+    do createDirectoryIfMissing True "log"
+       createIfMissing "log/access.log"
+       createIfMissing "log/error.log"
+    where
+      createIfMissing path = do
+        exists <- doesFileExist path
+        when (not exists) $ BS.writeFile path ""
 
 -- | Compile all of the Elm files in public/, placing results in public/build/
 precompile :: IO ()
 precompile =
   do setCurrentDirectory "public"
      files <- getFiles True ".elm" "."
-     forM_ files $ \file -> do
-       rawSystem "elm" ["--make","--runtime=/elm-runtime.js?v0.10",file]
+     forM_ files $ \file -> rawSystem "elm" ["--make","--runtime=/elm-runtime.js",file]
      htmls <- getFiles False ".html" "build"
      mapM_ adjustHtmlFile htmls
      setCurrentDirectory ".."
   where
     getFiles :: Bool -> String -> FilePath -> IO [FilePath]
-    getFiles skip ext dir = do
-        case skip && "build" `elem` map dropTrailingPathSeparator (splitPath dir) of
-          True -> return []
-          False -> do
-            contents <- map (dir </>) `fmap` getDirectoryContents dir
-            let files = filter ((ext==) . takeExtension) contents
-                dirs  = filter (not . hasExtension) contents
-            filess <- mapM (getFiles skip ext) dirs
-            return (files ++ concat filess)
+    getFiles skip ext directory = 
+        if skip && "build" `elem` map FP.dropTrailingPathSeparator (FP.splitPath directory)
+          then return [] else
+          (do contents <- map (directory </>) `fmap` getDirectoryContents directory
+              let files = filter ((ext==) . FP.takeExtension) contents
+                  directories  = filter (not . FP.hasExtension) contents
+              filess <- mapM (getFiles skip ext) directories
+              return (files ++ concat filess))
 
 getRuntimeAndDocs :: IO ()
 getRuntimeAndDocs = do
-  writeFile "resources/elm-runtime.js" =<< readFile =<< Elm.runtime
-  writeFile "resources/docs.json" =<< readFile =<< Elm.docs
+  writeFile "resources/elm-runtime.js" =<< readFile Elm.runtime
+  writeFile "resources/docs.json" =<< readFile Elm.docs
 
 adjustHtmlFile :: FilePath -> IO ()
 adjustHtmlFile file =
-  do src <- readFile file
-     let (before,after) =
-             length src `seq`
-             List.break (List.isInfixOf "<title>") (lines src)
+  do src <- BSC.readFile file
+     let (before, after) = BSC.breakSubstring "<title>" src
+     BSC.writeFile (FP.replaceExtension file "elm") $
+        BSC.concat [before, style, after, analytics]
      removeFile file
-     writeFile (replaceExtension file "elm") (unlines (before ++ [style] ++ after ++ [renderHtml googleAnalytics]))
-  where
-    style = 
-        unlines . map ("    "++) $
-        [ "<style type=\"text/css\">"
-        , "  a:link {text-decoration: none; color: rgb(15,102,230);}"
-        , "  a:visited {text-decoration: none}"
-        , "  a:active {text-decoration: none}"
-        , "  a:hover {text-decoration: underline; color: rgb(234,21,122);}"
-        , "  body { font-family: \"Lucida Grande\",\"Trebuchet MS\",\"Bitstream Vera Sans\",Verdana,Helvetica,sans-serif !important; }"
-        , "  p, li { font-size: 14px !important;"
-        , "          line-height: 1.5em !important; }"
-        , "</style>" ]
+
+style :: BSC.ByteString
+style = 
+    "<style type=\"text/css\">\n\
+    \  a:link {text-decoration: none; color: rgb(15,102,230);}\n\
+    \  a:visited {text-decoration: none}\n\
+    \  a:active {text-decoration: none}\n\
+    \  a:hover {text-decoration: underline; color: rgb(234,21,122);}\n\
+    \  body { font-family: \"Lucida Grande\",\"Trebuchet MS\",\"Bitstream Vera Sans\",Verdana,Helvetica,sans-serif !important; }\n\
+    \  p, li { font-size: 14px !important;\n\
+    \          line-height: 1.5em !important; }\n\
+    \</style>"
+
+-- | Add analytics to a page.
+analytics :: BSC.ByteString
+analytics = BSC.pack . BlazeS.renderHtml $
+    H.script ! A.type_ "text/javascript" $
+         "var _gaq = _gaq || [];\n\
+         \_gaq.push(['_setAccount', 'UA-25827182-1']);\n\
+         \_gaq.push(['_setDomainName', 'elm-lang.org']);\n\
+         \_gaq.push(['_trackPageview']);\n\
+         \(function() {\n\
+         \  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;\n\
+         \  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n\
+         \  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);\n\
+         \})();"
