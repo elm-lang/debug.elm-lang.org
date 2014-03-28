@@ -82,10 +82,12 @@ open fp =
 
 serveEditor :: ServerPart Response
 serveEditor = do
-  cols <- getDataFn (look "cols")
-  uriRest . withFile . ide $ case cols of
-                               Left _    -> "50%,50%"
-                               Right str -> str
+  noDebug <- getDataFn (look "noDebug")
+  let useDebugger = case noDebug of
+                      Left _ -> True
+                      Right _ -> False
+  uriRest . withFile . ide $ useDebugger
+
 
 -- | Do something with the contents of a File.
 withFile :: (FilePath -> String -> Html) -> FilePath -> ServerPart Response

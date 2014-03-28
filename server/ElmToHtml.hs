@@ -27,7 +27,7 @@ elmToHtml name src =
       H.body $ do
         let js = H.script ! A.type_ "text/javascript"
             name = "Elm." ++ fromMaybe "Main" (Elm.moduleName src)
-            runFullscreen = "var runningElmModule = Elm.fullscreen(" ++ name ++ ")"
+            runFullscreen = "var runningElmModule = Elm.fullscreen(Elm.debuggerAttach(" ++ name ++ "))"
         js ! A.src (H.toValue ("/elm-runtime.js" :: String)) $ ""
         case Elm.compile src of
           Right jsSrc -> do
@@ -36,7 +36,6 @@ elmToHtml name src =
           Left err ->
               H.span ! A.style "font-family: monospace;" $
               mapM_ (\line -> preEscapedToMarkup (addSpaces line) >> H.br) (lines err)
-        googleAnalytics
 
 addSpaces str =
   case str of

@@ -16,29 +16,27 @@ function hotSwap() {
             && request.status < 300) {
             var result = JSON.parse(request.responseText);
             var top = self.parent;
-            if (js = result.success) {
+            var js = result.success;
+            if (js) {
                 var error = top.output.document.getElementById('ErrorMessage');
                 if (error) {
                     error.parentNode.removeChild(error);
                 }
                 top.output.eval(js);
-                var module = js.substring(0,js.indexOf('=')).replace(/\s/g,'');
-                top.output.runningElmModule =
-                    top.output.runningElmModule.swap(top.output.eval(module));
-            } else {
-                var error = top.output.document.getElementById('ErrorMessage');
-                if (!error) {
-                    error = document.createElement('div');
-                    error.id = 'ErrorMessage';
-                    error.style.fontFamily = 'monospace';
-                    error.style.position = 'absolute';
-                    error.style.bottom = '0';
-                    error.style.width = '100%';
-                    error.style.backgroundColor = 'rgba(245,245,245,0.95)';
+                var moduleStr = js.substring(0,js.indexOf('=')).replace(/\s/g,'');
+                var module = top.output.eval(moduleStr);
+                if (top.output.Elm.Debugger) {
+                    var debuggerState = top.output.Elm.Debugger.getHotSwapState();
+                    top.output.runningElmModule.dispose();
+                    top.output.Elm.Debugger.dispose();
+
+                    var wrappedModule = top.output.Elm.debuggerAttach(module, debuggerState);
+                    top.output.runningElmModule = top.output.Elm.fullscreen(wrappedModule);
                 }
-                error.innerHTML = '<b>Hot Swap Failed</b><br/>' +
-                    result.error.replace(/\n/g, '<br/>').replace(/  /g, " &nbsp;");
-                top.output.document.body.appendChild(error);
+                else {
+                    top.output.runningElmModule =
+                        top.output.runningElmModule.swap(module);
+                }
             }
         }
     };
@@ -234,7 +232,7 @@ function messageForTokenAt(pos) {
 
     var results = lookupDocs(token, pos.line);
     if (results === null) return empty;
-    if (results.isSyntax) {
+    if (results.isSyntax && elmSyntax.hasOwnProperty(results.name)) {
         var info = elmSyntax[results.name];
         var desc = info.message || info;
         var extra = '<p>See the <a href="/learn/Syntax.elm">syntax reference</a> for more information.</p>';
@@ -261,11 +259,7 @@ function messageForTokenAt(pos) {
                  extra: value.desc ? value.desc : '<p>No additional information.</p>' };
     }
 
-    return {
-        message: 'You probably want one of these: ' +
-            results.map(docsLink).join(' or '),
-        extra: '<p>This feature is not yet clever enough to figure out which one.</p>'
-    };
+    return empty;
 }
 
 function updateDocumentation() {
@@ -368,7 +362,7 @@ function setAutoHotSwap(enable, init) {
 
 function updateOutput() {
     clearTimeout(delay);
-    delay = setTimeout(hotSwap, 1000);
+    delay = setTimeout(hotSwap, 100);
 }
 
 function setTheme(theme) {
@@ -487,4 +481,101 @@ function initEditor() {
     initZoom();
     initMenu();
     initAutoHotSwap();
+
+    initValueSlider();
+}
+
+function initValueSlider() {
+    var sliderDiv = document.createElement('div');
+    sliderDiv.style.position = 'absolute';
+    sliderDiv.style.top = '0';
+    sliderDiv.style.right = '0';
+    sliderDiv.style.visibility = 'hidden';
+    sliderDiv.style.border = "1px solid rgb(150,150,150)";
+    sliderDiv.style.borderRadius = "3px";
+    sliderDiv.style.backgroundColor = "rgb(238, 238, 236)";
+    sliderDiv.style.padding = "5px";
+    sliderDiv.style.boxShadow = "1px 1px 3px grey";
+    sliderDiv.style.zIndex = 2;
+
+    var slider = document.createElement('input');
+    slider.type = 'range';
+    slider.style.width = "200px";
+    sliderDiv.appendChild(slider);
+
+    document.body.appendChild(sliderDiv);
+
+
+    function repositionSlider() {
+        var cursorDiv = document.getElementsByClassName("CodeMirror-cursor")[0];
+        if (cursorDiv) {
+            var bounds = cursorDiv.getBoundingClientRect();
+            sliderDiv.style.right = '';
+            sliderDiv.style.top = '';
+            sliderDiv.style.left = (bounds.left - sliderDiv.offsetWidth/2) + 'px';
+            sliderDiv.style.top = (bounds.top - sliderDiv.offsetHeight - 3) + 'px';
+            console.log(bounds);
+        }
+        else {
+            sliderDiv.style.right = '0';
+            sliderDiv.style.top = '0';
+        }
+    }
+
+    function getFrom(cursor, token) {
+        return { line: cursor.line, ch: token.start };
+    }
+
+    function getTo(cursor, token) {
+        return { line: cursor.line, ch: token.end };
+    }
+
+    editor.on('scroll', function(e) {
+        repositionSlider();
+    });
+
+    var replacingRange = false;
+    editor.on('cursorActivity', function(e) {
+        if (replacingRange) {
+            return;
+        }
+        var cursor = editor.getCursor();
+        var token = editor.getTokenAt(cursor);
+        if (token.type === 'number') {
+            repositionSlider();
+
+            sliderDiv.style.visibility = '';
+            var v = +token.string;
+            if (token.string.indexOf(".") >= 0) {
+                slider.min = Math.max(0, v - 5);
+                slider.max = v + 5;
+                slider.step = 0.1;
+            }
+            else {
+                slider.min = Math.max(0, v - 50);
+                slider.max = v + 50;
+                slider.step = 1;
+            }
+            slider.value = v;
+        }
+        else {
+            sliderDiv.style.visibility = 'hidden';
+        }
+        console.log("cursor");
+    });
+
+    slider.addEventListener('change', function(e) {
+        var cursor = editor.getCursor();
+        var token = editor.getTokenAt(cursor);
+        if (token.type === 'number') {
+            replacingRange = true;
+            var v = slider.value;
+            if (token.string.indexOf('.') >= 0) {
+                v = (+slider.value).toFixed(1);
+            }
+            editor.getDoc().replaceRange(v, getFrom(cursor, token), getTo(cursor, token));
+            replacingRange = false;
+        }
+    });
+
 }
