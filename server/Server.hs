@@ -52,7 +52,6 @@ main = do
                 , ("code", code)
                 , ("compile", compile)
                 , ("hotswap", hotswap)
-                , ("login", login)
                 ]
       <|> serveDirectoryWith directoryConfig "public/build"
       <|> serveDirectoryWith simpleDirectoryConfig "resources"
@@ -102,17 +101,6 @@ withFile handler = do
   if not exists then error404 else
       do content <- liftIO $ readFile file
          serveHtml $ handler path content
-
--- | Simple response for form-validation demo.
-login :: Snap ()
-login = do
-  first <- maybe "John" id <$> getQueryParam "first"
-  last' <- maybe "Doe" id <$> getQueryParam "last"
-  email <- maybe "john.doe@example.com" id <$> getQueryParam "email"
-  writeBS $ BS.concat [ "Hello, ", first, " ", last'
-                      , "! Welcome to the fake login-confirmation page.\n\n"
-                      , "We will not attempt to contact you at ", email
-                      , ".\nIn fact, your (fake?) email has not even been recorded." ]
 
 directoryConfig :: MonadSnap m => DirectoryConfig m
 directoryConfig =
