@@ -87,8 +87,8 @@ compile = maybe error404 serve =<< getParam "input"
 
 edit :: Snap ()
 edit = do
-  cols <- BSC.unpack . maybe "50%,50%" id <$> getQueryParam "cols"
-  withFile (Editor.ide cols)
+  debugger <- maybe True (const False) <$> getQueryParam "noDebugger"
+  withFile (Editor.ide debugger)
 
 code :: Snap ()
 code = withFile Editor.editor

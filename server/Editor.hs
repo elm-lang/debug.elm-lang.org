@@ -18,7 +18,7 @@ ide useDebugger fileName code =
 
 -- | Display an editor and the compiled result side-by-side.
 empty :: Html
-empty = ideBuilder "50%,50%" "Try Elm" "Empty.elm" "/Try.elm"
+empty = ideBuilder True "Try Elm" "Empty.elm" "/Try.elm"
 
 ideBuilder :: Bool -> String -> String -> String -> Html
 ideBuilder useDebugger title input output =
