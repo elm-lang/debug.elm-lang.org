@@ -9,14 +9,16 @@ The result is normally held in the Right (a pun indicating
 that it is correct).
 
 More info at:
-  http://elm-lang.org/docs/Data/Either.elm
+  http://docs.elm-lang.org/library/Either.elm
 
 -----------------------------------------------------------}
 
-import open Either
+import Either (..)
 
+names : [Either String Int]
 names = [ Left "Alice", Right 43, Left "Bob", Right 29, Right 7 ]
 
+main : Element
 main =
   flow down
     [ asText names,
