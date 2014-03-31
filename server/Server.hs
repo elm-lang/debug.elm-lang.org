@@ -46,9 +46,8 @@ main = do
   precompile
   cargs <- cmdArgs flags
   httpServe (setPort (port cargs) defaultConfig) $
-      ifTop (serveElm "public/build/Elm.elm")
-      <|> route [ ("try", serveHtml Editor.empty)
-                , ("edit", edit)
+      ifTop (serveHtml Editor.empty)
+      <|> route [ ("edit", edit)
                 , ("code", code)
                 , ("compile", compile)
                 , ("hotswap", hotswap)
@@ -96,7 +95,7 @@ code = withFile Editor.editor
 withFile :: (FilePath -> String -> H.Html) -> Snap ()
 withFile handler = do
   path <- BSC.unpack . rqPathInfo <$> getRequest
-  let file = "public/" ++ path         
+  let file = "examples/" ++ path
   exists <- liftIO (doesFileExist file)
   if not exists then error404 else
       do content <- liftIO $ readFile file
