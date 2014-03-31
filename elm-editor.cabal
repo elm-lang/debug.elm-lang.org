@@ -1,13 +1,13 @@
-name:                elm-website
-version:             0.1.0.2
-synopsis:            elm-lang.org web site
-description:         Server and content for the Elm Language web site.
+name:                elm-debugger
+version:             0.1
+synopsis:            Server for using the reactive debugger.
+description:         Debug Elm code by visualizing the signal graph, pausing/rewind/replay, and hotswapping.
 homepage:            http://elm-lang.org/
 license:             BSD3
 license-file:        LICENSE
 author:              Evan Czaplicki
 maintainer:          info@elm-lang.org
-copyright:           (c) 2012-2014 Evan Czaplicki
+copyright:           (c) 2014 Evan Czaplicki
 
 build-type:          Simple
 extra-source-files:  README.md
@@ -16,12 +16,11 @@ cabal-version:       >=1.10
 extra-tmp-files:       public/build
                      , public/cache
 
-executable run-elm-website
+executable elm-debugger
   main-is:             Server.hs
   other-extensions:    OverloadedStrings
   ghc-options:         -threaded -O2 -rtsopts "-with-rtsopts=-N -I4"
-  build-depends:       aeson
-                     , base
+  build-depends:       base
                      , blaze-html
                      , blaze-markup
                      , bytestring
@@ -30,11 +29,11 @@ executable run-elm-website
                      , directory
                      , Elm >= 0.12
                      , filepath
-                     , snap-core
-                     , snap-server
                      , HTTP
                      , mtl
                      , process
+                     , snap-core
+                     , snap-server
                      , unordered-containers
 
   hs-source-dirs:      server
