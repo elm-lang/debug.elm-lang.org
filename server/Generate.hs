@@ -36,7 +36,7 @@ html name src =
 
     runFullscreen =
         let moduleName = "Elm." ++ fromMaybe "Main" (Elm.moduleName src)
-        in  "var runningElmModule = Elm.fullscreen(" ++  moduleName ++ ")"
+        in  "var runningElmModule = Elm.fullscreen(Elm.debuggerAttach(" ++  moduleName ++ "))"
 
     buildPage content = H.docTypeHtml $ do
         H.head $ do

@@ -91,12 +91,12 @@ function clearFontFamily(nodeList) {
 }
 
 function createSignalGraphView(Elm, elmDebugger) {
-	var Prelude = Elm.Prelude.make({});
+	var StringM = Elm.String.make({});
 	function nodeValueToString(node) {
 		if (node === elmDebugger.mainNode) {
 			return 'main';
 		}
-		return Prelude.show(node.value);
+		return StringM.show(node.value);
 	}
 
 	var allInputs = filterReachableNodes(elmDebugger.allNodes, elmDebugger.mainNode);
