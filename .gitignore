@@ -1,9 +1,6 @@
-compiled
-ElmServer
 cache
 build
 dist
 resources/elm-runtime.js
 resources/docs.json
-run-elm-website
 log

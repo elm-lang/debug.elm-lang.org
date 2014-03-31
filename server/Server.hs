@@ -46,7 +46,7 @@ main = do
   precompile
   cargs <- cmdArgs flags
   httpServe (setPort (port cargs) defaultConfig) $
-      ifTop (serveHtml Editor.empty)
+      ifTop (serveElm "public/build/Home.elm")
       <|> route [ ("edit", edit)
                 , ("code", code)
                 , ("compile", compile)

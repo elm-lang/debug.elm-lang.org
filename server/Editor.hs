@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Editor (editor,ide,empty) where
+module Editor (editor,ide) where
 
 import Data.Monoid (mempty)
 import Text.Blaze.Html
@@ -15,10 +15,6 @@ ide useDebugger fileName code =
                ("Elm Editor: " ++ FP.takeBaseName fileName)
                fileName
                ("/compile?input=" ++ urlEncode code)
-
--- | Display an editor and the compiled result side-by-side.
-empty :: Html
-empty = ideBuilder True "Elm Debugger" "Empty.elm" "/Try.elm"
 
 ideBuilder :: Bool -> String -> String -> String -> Html
 ideBuilder useDebugger title input output =
