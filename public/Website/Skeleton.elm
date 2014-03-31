@@ -58,14 +58,15 @@ homeHeader outer inner =
     ]
 
 bigWords : Text
-bigWords = Text.height 40 <| Text.color C.mediumGrey <| toText "Elm Debugger"
+bigWords = Text.height 40 <| Text.color C.mediumGrey <| toText "Elm&rsquo;s Reactive Debugger"
 
 title : Element
 title =
     flow down
     [ link "/" <| leftAligned <| bigWords
     , spacer 10 4
-    , leftAligned . Text.height 16 . Text.color C.mediumGrey <| toText "Pause, rewind, replay."
+    , leftAligned . Text.height 16 . Text.color C.mediumGrey <|
+          toText "Bret Victor style debugging, implemented in real life."
     ]
 
 footer outer = container outer footerHeight footerPosition <| Text.centered footerWords
