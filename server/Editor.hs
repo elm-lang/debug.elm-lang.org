@@ -23,8 +23,8 @@ ideBuilder useDebugger title input output =
         H.title . toHtml $ title
       preEscapedToMarkup $
          if useDebugger
-         then concat [ "<frameset cols=\"40%,60%\">\n"
-                     , "  <frameset rows=\"50%,50%\">\n"
+         then concat [ "<frameset cols=\"50%,50%\">\n"
+                     , "  <frameset rows=\"60%,40%\">\n"
                      , "    <frame name=\"input\" src=\"/code/", input, "\" />\n"
                      , "    <frame name=\"output\" src=\"", output, "\" />\n"
                      , "  </frameset>"
