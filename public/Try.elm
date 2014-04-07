@@ -3,11 +3,14 @@ import Website.Message (report)
 main = report [markdown|
 <style type="text/css">p { text-align:justify; }</style>
 
-# Try Elm
+# Elm Debugger
 
-This is an online editor for writing and compiling
-<a href="/" target="_top">Elm</a> code. If you
-are unsure how to get started, take a look at the
-<a href="/Examples.elm" target="_top">examples</a>
-or <a href="/Learn.elm" target="_top">learning resources</a>.
+After reading <a href="/" target="_top">the overview</a>, play with some
+examples and start debugging your own
+<a href="http://elm-lang.org" target="_top">Elm</a> programs:
+
+  * <a href="/edit/Stamps.elm" target="_top">Stamps</a>
+  * <a href="/edit/Mario.elm" target="_top">Mario</a>
+  * <a href="/edit/KeepIf.elm" target="_top">Numbers-only field</a>
+
 |]
