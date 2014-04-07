@@ -11,6 +11,6 @@ examples and start debugging your own
 
   * <a href="/edit/Stamps.elm" target="_top">Stamps</a>
   * <a href="/edit/Mario.elm" target="_top">Mario</a>
-  * <a href="/edit/KeepIf.elm" target="_top">Numbers-only field</a>
+  * <a href="/edit/NumbersOnly.elm" target="_top">Numbers-only field</a>
 
 |]
