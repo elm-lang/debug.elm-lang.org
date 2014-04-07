@@ -63,7 +63,8 @@ var elmDebugger = {
 	getMaxSteps: function() { return 0; },
 	stepTo: function(i) {},
 	getPaused: function() { return false; },
-	getHotSwapState: function() { return null; }
+	getHotSwapState: function() { return null; },
+        watchTracker: { frames:[{}] }
 };
 
 function updateStatus() {
