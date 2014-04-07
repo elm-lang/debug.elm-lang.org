@@ -1,12 +1,15 @@
-
+import Debug
 import Mouse
 import Window
 
 main : Signal Element
-main = lift2 scene Window.dimensions clickLocations
+main =
+  lift2 scene Window.dimensions (Debug.watch "Stamps" <~ clickLocations)
 
 clickLocations : Signal [(Int,Int)]
-clickLocations = foldp (::) [] (sampleOn Mouse.clicks Mouse.position)
+clickLocations =
+  let position = Debug.watch "Mouse" <~ Mouse.position
+  in  foldp (::) [] (sampleOn Mouse.clicks position)
 
 scene : (Int,Int) -> [(Int,Int)] -> Element
 scene (w,h) locs =

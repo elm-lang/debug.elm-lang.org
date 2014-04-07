@@ -1,4 +1,5 @@
 import Char (isDigit)
+import Debug
 import String (all)
 import Graphics.Input (Input, input)
 import Graphics.Input.Field as Field
@@ -11,4 +12,9 @@ numbers = input Field.noContent
 
 display : Field.Content -> Element
 display content =
-    Field.field Field.defaultStyle numbers.handle id "Only numbers!" content
+    Field.field
+         Field.defaultStyle
+         numbers.handle
+         id
+         "Only numbers!"
+         (Debug.watchSummary "Content" .string content)

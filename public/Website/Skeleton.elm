@@ -53,7 +53,12 @@ homeHeader outer inner =
     [ tiledImage outer homeHeaderHeight "/tile.png"
     , flow right [ container homeHeaderHeight homeHeaderHeight middle <|
                    link "http://elm-lang.org" logoButton
-                 , container inner homeHeaderHeight midLeft title
+                 , container (inner - 142) homeHeaderHeight midLeft title
+                 , container 142 homeHeaderHeight middle <|
+                   link "/try" <| 
+                   color C.mediumGrey <| container 122 52 middle <|
+                   color C.accent1 <| container 120 50 middle <|
+                   leftAligned . Text.height 20 . Text.color C.lightGrey <| toText "Debug"
                  ]
     ]
 
@@ -66,7 +71,7 @@ title =
     [ link "/" <| leftAligned <| bigWords
     , spacer 10 4
     , leftAligned . Text.height 16 . Text.color C.mediumGrey <|
-          toText "Bret Victor style debugging, implemented in real life."
+          toText "Bret Victor style debugging, implemented for Elm."
     ]
 
 footer outer = container outer footerHeight footerPosition <| Text.centered footerWords

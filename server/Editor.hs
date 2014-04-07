@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Editor (editor,ide) where
+module Editor (editor,ide,empty) where
 
 import Data.Monoid (mempty)
 import Text.Blaze.Html
@@ -9,31 +9,29 @@ import Network.HTTP.Base (urlEncode)
 import qualified System.FilePath as FP
 
 -- | Display an editor and the compiled result side-by-side.
-ide :: Bool -> FilePath -> String -> Html
-ide useDebugger fileName code =
-    ideBuilder useDebugger
-               ("Elm Editor: " ++ FP.takeBaseName fileName)
+ide :: FilePath -> String -> Html
+ide fileName code =
+    ideBuilder ("Elm Editor: " ++ FP.takeBaseName fileName)
                fileName
                ("/compile?input=" ++ urlEncode code)
 
-ideBuilder :: Bool -> String -> String -> String -> Html
-ideBuilder useDebugger title input output =
+-- | Display an editor and the compiled result side-by-side.
+empty :: Html
+empty = ideBuilder "Debug Elm" "Empty.elm" "/Try.elm"
+
+ideBuilder :: String -> String -> String -> Html
+ideBuilder title input output =
     H.docTypeHtml $ do
       H.head $ do
         H.title . toHtml $ title
       preEscapedToMarkup $
-         if useDebugger
-         then concat [ "<frameset cols=\"50%,50%\">\n"
-                     , "  <frameset rows=\"60%,40%\">\n"
-                     , "    <frame name=\"input\" src=\"/code/", input, "\" />\n"
-                     , "    <frame name=\"output\" src=\"", output, "\" />\n"
-                     , "  </frameset>"
-                     , "  <frame name=\"debug\" src=\"/debugger/elm-debugger.html\" />\n"
-                     , "</frameset>" ]
-         else concat [ "<frameset cols=\"50%,50%\">\n"
-                     , "  <frame name=\"input\" src=\"/code/", input, "\" />\n"
-                     , "  <frame name=\"output\" src=\"", output, "\" />\n"
-                     , "</frameset>" ]
+         concat [ "<frameset cols=\"50%,50%\">\n"
+                , "  <frame name=\"input\" src=\"/code/", input, "\" />\n"
+                , "  <frameset rows=\"*,110\">\n"
+                , "    <frame name=\"output\" src=\"", output, "\" />\n"
+                , "    <frame name=\"debug\" src=\"/debugger/elm-debugger.html\" />\n"
+                , "  </frameset>"
+                , "</frameset>" ]
 
 -- | list of themes to use with CodeMirror
 themes :: [String]

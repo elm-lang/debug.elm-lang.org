@@ -47,7 +47,8 @@ main = do
   cargs <- cmdArgs flags
   httpServe (setPort (port cargs) defaultConfig) $
       ifTop (serveElm "public/build/Home.elm")
-      <|> route [ ("edit", edit)
+      <|> route [ ("try", serveHtml Editor.empty)
+                , ("edit", edit)
                 , ("code", code)
                 , ("compile", compile)
                 , ("hotswap", hotswap)
@@ -85,9 +86,7 @@ compile = maybe error404 serve =<< getParam "input"
         serveHtml result
 
 edit :: Snap ()
-edit = do
-  debugger <- maybe True (const False) <$> getQueryParam "noDebugger"
-  withFile (Editor.ide debugger)
+edit = withFile Editor.ide
 
 code :: Snap ()
 code = withFile Editor.editor
