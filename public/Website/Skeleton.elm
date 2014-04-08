@@ -1,4 +1,4 @@
-module Website.Skeleton (home) where
+module Website.Skeleton (home,faces) where
 
 import Graphics.Input as Input
 import Graphics.Input.Field as F
@@ -58,19 +58,21 @@ homeHeader outer inner =
                    link "/try" <| 
                    color C.mediumGrey <| container 122 52 middle <|
                    color C.accent1 <| container 120 50 middle <|
-                   leftAligned . Text.height 20 . Text.color C.lightGrey <| toText "Debug"
+                   leftAligned . typeface faces . Text.height 20 . Text.color C.lightGrey <| toText "Debug"
                  ]
     ]
 
+faces = [ "futura","century gothic","twentieth century","calibri","verdana","helvetica","arial" ]
+
 bigWords : Text
-bigWords = Text.height 40 <| Text.color C.mediumGrey <| toText "Elm&rsquo;s Reactive Debugger"
+bigWords = Text.height 40 <| typeface faces <| Text.color C.mediumGrey <| toText "Elm&rsquo;s Reactive Debugger"
 
 title : Element
 title =
     flow down
     [ link "/" <| leftAligned <| bigWords
     , spacer 10 4
-    , leftAligned . Text.height 16 . Text.color C.mediumGrey <|
+    , leftAligned . Text.height 16 . typeface faces . Text.color C.mediumGrey <|
           toText "Bret Victor style debugging, implemented for Elm."
     ]
 
