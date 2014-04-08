@@ -11,7 +11,7 @@ import qualified System.FilePath as FP
 -- | Display an editor and the compiled result side-by-side.
 ide :: FilePath -> String -> Html
 ide fileName code =
-    ideBuilder ("Elm Editor: " ++ FP.takeBaseName fileName)
+    ideBuilder ("Elm Debugger: " ++ FP.takeBaseName fileName)
                fileName
                ("/compile?input=" ++ urlEncode code)
 
