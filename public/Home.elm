@@ -310,7 +310,7 @@ side-effect.
 Now why is this important for the debugger? If the programmer could make HTTP
 requests or open files at any time, playback would be much more complicated.
 Suddenly there is code that cannot be rerun because it changes the world.
-Imagine opening a file and rewinding back and forth throgh the code that writes
+Imagine opening a file and rewinding back and forth through the code that writes
 to it. The act of debugging would trash your file. So impurity can easily
 *introduce* new bugs into your program as you debug!
 
