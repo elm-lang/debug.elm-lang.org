@@ -194,7 +194,7 @@ try video name =
 
 stamps w = width w [markdown|
 
-<video width="640" height="200" preload controls poster="/videos/Stamps.png">
+<video width="640" height="200" controls poster="/videos/Stamps.png">
   <source src="/videos/Stamps.mp4" type="video/mp4">
   <source src="/videos/Stamps.webm" type="video/webm">
 </video>
@@ -203,7 +203,7 @@ stamps w = width w [markdown|
 
 mario w = width w [markdown|
 
-<video width="636" height="200" preload controls poster="/videos/Mario.png">
+<video width="636" height="200" controls poster="/videos/Mario.png">
   <source src="/videos/Mario.mp4" type="video/mp4">
   <source src="/videos/Mario.webm" type="video/webm">
 </video>
@@ -212,7 +212,7 @@ mario w = width w [markdown|
 
 reverser w = width w [markdown|
 
-<video width="640" height="200" preload controls poster="/videos/NumbersOnly.png">
+<video width="640" height="200" controls poster="/videos/NumbersOnly.png">
   <source src="/videos/NumbersOnly.mp4" type="video/mp4">
   <source src="/videos/NumbersOnly.webm" type="video/webm">
 </video>
