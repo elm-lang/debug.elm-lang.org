@@ -67,21 +67,32 @@ It is easy enough to show the program itself in a text-editor, but is it
 possible to visualize what that program does? What it is going to do? What
 it did already?
 
-In the talk [Inventing on Principle][inventing], Bret Victor demonstrated some
-very compelling ways to close the gap between writing a program and running a
-program ([TL;DW](http://worrydream.com/LearnableProgramming/)). With such
+In the talk [Inventing on Principle][inventing] and its elaboration in the essay
+[Learnable Programming](http://worrydream.com/LearnableProgramming/),
+[Bret Victor](http://worrydream.com/) demonstrated some very compelling ways to
+close the gap between writing a program and running a program. With such
 immediate feedback, it becomes easy to explore the *meaning* of your program
 in a way that has never been possible before.
 
-The only problem is that no one has been able to implement these ideas. The
-ability to pause, rewind, and replay programs is not something you can bolt
-onto JavaScript in a weekend. Turns out it is a lot easier in Elm though.
+The only problem is that no one has been able to implement these ideas yet.
+Perhaps shockingly, the core barrier is *language design*. Adding pause, rewind,
+and replay is catastrophic for traditional imperative languages where it is
+extremely difficult to avoid repeating side-effects like writing to disk,
+sending HTTP requests, or modifying variables.
 
 At [Elm Workshop 2013][workshop], [Laszlo Pandy](https://github.com/laszlopandy/)
-presented [a practical path to implementating these ideas with working
-prototype][talk] he called the Elm Debugger. The rest of this post is dedicated
-to [live examples](#three-examples), describing [how it
-works](#how-Elm-makes-this-possible), and outlining [what is next](#what-is-next).
+presented [a practical path to implementating these ideas][talk] with working
+prototype he called the Elm Debugger. A practical implementation relies
+crucially on [Functional Reactive Programming][frp] and purity to safely manage
+events and side-effects, all of which is very natural in Elm. Without these core
+language design choices, a reactive debugger quickly becomes intractable.
+
+The rest of this post is
+dedicated to [live examples](#three-examples), describing
+[how it works](#how-Elm-makes-this-possible), and outlining
+[what is next](#what-is-next).
+
+ [frp]: http://elm-lang.org/learn/What-is-FRP.elm
 
 ## Three Examples
 
