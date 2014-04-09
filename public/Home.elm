@@ -58,43 +58,53 @@ code > span.er { color: #D30102; font-weight: bold; }
  [workshop]: https://www.youtube.com/channel/UCzbnVYNyCwES9u3dqYZ-0WQ
  [talk]: https://www.youtube.com/watch?v=lK0vph1zR8s&list=PLrJ2mLJTxzXcBvJr5iZKetpeqHOJYJ8AW
 
-## &ldquo;How do you debug Elm?&rdquo;
+ [interactive]: http://en.wikipedia.org/wiki/Interactive_programming
+ [inventing]: https://www.youtube.com/watch?v=PUv66718DII
 
-Inspired by Bret Victor's talk
-[Inventing on Principle](https://www.youtube.com/watch?v=PUv66718DII) and
-some snarky comments on Hacker News,
-[Laszlo Pandy](https://github.com/laszlopandy/) started wondering what a
-*reactive* debugger might look like. Traditional stack traces and break points
-tend to be quite painful when debugging GUIs, so he took this as a challenge
-to implement a debugger for Elm that is fundamentally better for interactive
-programs.
+## How do you visualize the *meaning* of a program?
 
- [frp]: http://elm-lang.org/learn/What-is-FRP.elm
+It is easy enough to show the program itself in a text-editor, but is it
+possible to visualize what that program does? What it is going to do? What
+it did already?
 
-One of the most interesting things about his debugger is that it relies
-crucially on the specific design of [Functional Reactive Programming][frp]
-as it appears in Elm and the fact that Elm is pure and immutable.
-We will dive into the technical details, but first you should see the debugger
-in action and try it yourself.
+In the talk [Inventing on Principle][inventing], Bret Victor demonstrated some
+very compelling ways to close the gap between writing a program and running a
+program ([TL;DW](http://worrydream.com/LearnableProgramming/)). With such
+immediate feedback, it becomes easy to explore the *meaning* of your program
+in a way that has never been possible before.
+
+The only problem is that no one has been able to implement these ideas. The
+ability to pause, rewind, and replay programs is not something you can bolt
+onto JavaScript in a weekend. Turns out it is a lot easier in Elm though.
+
+At [Elm Workshop 2013][workshop], [Laszlo Pandy](https://github.com/laszlopandy/)
+presented [a practical path to implementating these ideas with working
+prototype][talk] he called the Elm Debugger. The rest of this post is dedicated
+to [live examples](#three-examples), describing [how it
+works](#how-Elm-makes-this-possible), and outlining [what is next](#what-is-next).
 
 ## Three Examples
 
-To demo the debugger, we have set up a bunch of examples. Three of them are
-showcased here with a video to show you how they work and a &ldquo;Try It&rdquo;
-button to let you jump into the debugger and try it yourself.
-
-The first example shows the debugger on a very simple Elm program. The goal here
-is to demonstrate the features of the debugger on a program that is pretty easy
-to modify and play with even if you have never used Elm before.
+Our broad goal is to visualize the *meaning* of a program. How does my program
+change over time? Our first example shows the debugger on a very simple Elm
+program, just demonstrating the basics:
 
 |]
 
 postStamps = [markdown|
 
 All of your interactions with the stamper are recorded so you can pause,
-rewind, and replay a sequence of events. Notice the &ldquo;watches&rdquo;
-right below the time slider. You can watch any value in the program as it
-changes over time using the function:
+rewind, and replay a sequence of events. You can also [modify code at any
+time][hotswap] to see how it changes things. This makes it easy to see how our
+stamps change over time, but what if we need to be more precise? For example,
+where is the fourth stamp *exactly*?
+
+ [hotswap]: http://elm-lang.org/blog/Interactive-Programming.elm
+
+Notice the &ldquo;watches&rdquo; below the time slider. As you move the mouse
+and click, you get immediate and *precise* feedback about the state of your
+program. So for the many values never manifest themselves in the UI, you can
+watch their precise value over time with:
 
 ```haskell
 Debug.watch : String -> a -> a
@@ -104,17 +114,10 @@ This function lets you give a unique name to a value and will display it in
 the debugger. From here it is easy to imagine integrating this into an IDE so
 that you do not actually need to change the source code to set up a watch.
 
-Besides pause, rewind, and replay, you can actually modify code to see how it
-changes the program thanks to [Elm&rsquo;s support for hot-swapping][hotswap].
-In this case we only modified constants, but as we will see in the next example,
-you can modify functions too!
-
- [hotswap]: http://elm-lang.org/blog/Interactive-Programming.elm
-
-Now we turn to a slightly more complicated animation of Mario with a simple bug.
-Something is wrong in our code such that Mario can double jump! In this case we
-actually modify the `jump` and `gravity` functions to see how that changes the
-program.
+Now that we know the basic tools of the debugger, we turn to a slightly more
+complicated animation of Mario with a simple bug. Something is wrong in our
+code such that Mario can double jump! In this case we actually modify the
+`jump` and `gravity` functions to see how that changes the program.
 
 |]
 
@@ -149,8 +152,10 @@ code > span.re { }
 code > span.er { color: #D30102; font-weight: bold; }
 </style>
 
-The trace of Mario&rsquo;s path through time is crucial to easily visualizing
-changes to your code. Laszlo introduced this ability with the following function:
+At about 20 seconds in, we begin tracing Mario&rsquo;s path through time. This
+trace is crucial to visualizing the meaning of our program. To explore the
+double jump bug, we need to see how changing our code changes Mario&rsquo;s
+path. Laszlo introduced this ability with the following function:
 
 ```haskell
 Debug.trace : String -> Element -> Element
@@ -167,7 +172,9 @@ source code explicitly.
 Most typical online applications are not interactive games though. Fortunately
 this debugger is handy for debugging issues with text fields, buttons, hovering,
 and any other event-driven element you can think of. This third example is a
-buggy text entry box that is *intended* to only accept numeric input.
+buggy text entry box that is *intended* to only accept numeric input. As you
+will see in the watched values, it is able to filter the initial letters but
+breaks down after that:
 
 |]
 
@@ -259,20 +266,16 @@ rather than changing code, performing the sequence,
 <span style="font-size:0.8em;">changing code, performing the sequence,</span>
 <span style="font-size:0.6em;">changing code, performing the sequence,</span> ...
 
-This is still a rough draft of what we would like to provide as Elm&rsquo;s
-debugging experience, so the goal of this post is to give an overview of what
-is possible and figure out how to improve the initial draft.
-
 ## How Elm makes this possible
 
 We will start with a more formal description of the features provided by the
 debugger as it is today:
 
-  * Pause, rewind, and replay a program
+  * Pause, rewind, and replay
   * [Hot-swap][hotswap] code at any time
-  * Trace an element's path over time
+  * Trace an element&rsquo;s path over time
   * Watch particular values over time
-  * Quickly modify contant numbers with sliders
+  * Quickly modify contants with sliders
 
  [hotswap]: http://elm-lang.org/blog/Interactive-Programming.elm
  [talk]: https://www.youtube.com/watch?v=lK0vph1zR8s&list=PLrJ2mLJTxzXcBvJr5iZKetpeqHOJYJ8AW
@@ -366,14 +369,11 @@ the necessary design requirements will have serious problems.
 
 ## What is next?
 
-The major goal is to make it easy to pair the debugger with your preferred editor
-or IDE. Elm is already great to use [in an existing code
-base](http://elm-lang.org/learn/Components.elm), and it is important that this
-is paired with a great debugging experience as soon as possible.
-
-Besides getting it out to the world, there is still a lot of work to be done on
-making the debugger beautiful, flexible, and easy to use. Some ideas for
-improvements along those lines are:
+The major goal is to make it easy to pair the debugger with your preferred
+editor. Perhaps this means pairing the debugger with `elm-server` or providing
+a general API that IDEs can interact with over HTTP. Aside from the big goal,
+there is still a lot of work to be done on making the debugger beautiful,
+flexible, and easy to use. Some ideas for improvements along those lines are:
 
   * **Modularize** &mdash; We would like to release the debugger as a component
     that can be dropped into an existing IDE.
