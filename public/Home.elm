@@ -394,6 +394,10 @@ flexible, and easy to use. Some ideas for improvements along those lines are:
     Perhaps bug reports could include the particular sequence of events needed
     to reproduce an error.
 
+  * **Graph watched values** &mdash; Seeing Mario&rsquo;s vertical velocity
+    plotted over time could be really helpful. Perhaps the debugger could have
+    an option to plot any watched number as a function of time.
+
   * **Visualize the signal graph** &mdash; In Laszlo's original version of the
     debugger, all signal graphs were visualized. These graphs can be complicated
     and hard to navigate as the signal graphs grows. Perhaps this is a better
