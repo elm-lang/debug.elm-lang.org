@@ -82,7 +82,8 @@ program&rsquo;s *meaning*. It lets you *see* how a program changes over time.
 ## Three Examples
 
 To really commit to the idea of visualizing and interacting with meaning, each
-example is paired with a very short video demo and a link to the online debugger.
+example is paired with a very short video demo and a link to the online
+debugger. Use them, they are better than text alone!
 
 Our first example demonstrates the basics of the debugger. We use a very simple
 stamping program to see the ability to to time travel and change history:
@@ -99,18 +100,19 @@ where is the fourth stamp *exactly*?
 
  [hotswap]: http://elm-lang.org/blog/Interactive-Programming.elm
 
-Notice the &ldquo;watches&rdquo; below the time slider. As you move the mouse
-and click, you get immediate and *precise* feedback about the state of your
-program. So for the many values never manifest themselves in the UI, you can
-watch their precise value over time with:
+Notice the values below the time slider. You can see the mouse position and the
+exact location of each stamp. Showing these values gives us the same kind of
+interactive feedback as the UI itself, but much more precisely. We do this with:
 
 ```haskell
 Debug.watch : String -> a -> a
 ```
 
-This function lets you give a unique name to a value and will display it in
-the debugger. From here it is easy to imagine integrating this into an IDE so
-that you do not actually need to change the source code to set up a watch.
+This function lets you give a value a unique name so it can be watched over
+time. This means we can look at the exact value of *anything*, even if it never
+appears in the UI. From here it is easy to imagine integrating this into an IDE
+so that you do not actually need to change the source code to watch a particular
+value.
 
 Now that we know the basic tools of the debugger, we turn to a slightly more
 complicated animation of Mario with a simple bug. Something is wrong in our
@@ -328,7 +330,7 @@ introducing bugs that would never appear outside of the debugger.
 So purity actually encompasses the concept of immutability, but I single it out
 with its own section mostly to make the point that immutability alone is not
 enough. A program that can arbitrarily write to disk or make HTTP requests is
-very difficult to rerun safely and reliably.
+still very difficult to rerun safely and reliably.
 
 ### Functional Reactive Programming
 
