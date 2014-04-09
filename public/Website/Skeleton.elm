@@ -65,7 +65,8 @@ homeHeader outer inner =
 faces = [ "futura","century gothic","twentieth century","calibri","verdana","helvetica","arial" ]
 
 bigWords : Text
-bigWords = Text.height 40 <| typeface faces <| Text.color C.mediumGrey <| toText "Elm&rsquo;s Reactive Debugger"
+bigWords = Text.height 40 <| typeface faces <| Text.color C.mediumGrey <|
+           toText "A Time Travelling Debugger"
 
 title : Element
 title =
@@ -73,7 +74,7 @@ title =
     [ link "/" <| leftAligned <| bigWords
     , spacer 10 4
     , leftAligned . Text.height 16 . typeface faces . Text.color C.mediumGrey <|
-          toText "Bret Victor style debugging, implemented for Elm."
+          toText "Control time and change the future with Elm&rsquo;s new debugger."
     ]
 
 footer outer = container outer footerHeight footerPosition <| Text.centered footerWords
