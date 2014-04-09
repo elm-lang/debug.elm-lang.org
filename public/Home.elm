@@ -266,33 +266,11 @@ rather than changing code, performing the sequence,
 
 ## How Elm makes this possible
 
-We will start with a more formal description of the features provided by the
-debugger as it is today:
-
-  * Pause, rewind, and replay
-  * [Hot-swap][hotswap] code at any time
-  * Trace an element&rsquo;s path over time
-  * Watch particular values over time
-  * Quickly modify contants with sliders
-
- [hotswap]: http://elm-lang.org/blog/Interactive-Programming.elm
- [talk]: https://www.youtube.com/watch?v=lK0vph1zR8s&list=PLrJ2mLJTxzXcBvJr5iZKetpeqHOJYJ8AW
- [workshop]: https://www.youtube.com/channel/UCzbnVYNyCwES9u3dqYZ-0WQ
-
-Laszlo explains how these features work in [his talk][talk] from [Elm
-Workshop 2013][workshop] (a very fun and accessible talk too):
-
-<iframe width="640"
-        height="360"
-        src="//www.youtube.com/embed/lK0vph1zR8s?list=PLrJ2mLJTxzXcBvJr5iZKetpeqHOJYJ8AW"
-        frameborder="0"
-        allowfullscreen></iframe>
-
-The talk itself is about 20 minutes, but we included the 20 minutes of Q&A
-because we felt it was really helpful in clarifying the limitations and future
-of the debugger. To summarize the &ldquo;how it works&rdquo; aspect, there are
-at least three major *language design* choices that are crucial to making this
-project possible: purity, immutability, and Elm&rsquo;s version of FRP.
+As stated in the intro, **language design is vital to making this debugger work.**
+This is the reason that over the past twenty years, the combined forces of
+Google, Mozilla, Apple, Microsoft, and the entire JS community have not created
+a time travelling debugger. This section dives into how purity and FRP are key
+to making it happen.
 
 ### Purity
 
@@ -334,25 +312,29 @@ still very difficult to rerun safely and reliably.
 
 ### Functional Reactive Programming
 
-So purity makes it *safe* to pause and rewind programs, but actually managing
-the specifics of this is handled by [Functional Reactive
-Programming](http://elm-lang.org/learn/What-is-FRP.elm) (FRP). In Elm, FRP is
-specifically answering the question, &ldquo;how can we manage
-side-effects in a pure language?&rdquo; Signals provide a simple API for
-managing events as they enter and exit an Elm program. To perform side-effects
+So purity makes it *safe* to pause and rewind programs, but it does not actually
+tell us *how* to do it. We need to somehow model incoming and outging events to
+track how our program interacts with the world over time. [Functional Reactive
+Programming][frp] (FRP) exists to do exactly that. FRP was introduced in Elm
+specifically to answer the question, &ldquo;how can values change over time in
+a pure language?&rdquo; Elm&rsquo;s signals provide a simple API for managing
+events as they enter and exit an Elm program. To perform side-effects
 you send data structures out of the program to the runtime. To observe the
 results of a side-effect, they are passed back in from the runtime.
 
-In the case of graphics, this means handing a data structure to the runtime
-to get drawn on screen. Elm does this by diffing the data structures, and this
-technique is becoming more efficient and widely known as recent projects like
-React and Om lead the way in optimizing the heck out of the diffing process.
-Events from the UI then come back to our program as [explicit
-inputs](http://elm-lang.org/learn/Interactive-UI-Elements.elm).
-What we are really doing is saying, &ldquo;hey runtime, please render
-this and let me know if anyone clicks on it.&rdquo; We are effectively pushing
-the side-effects out of our program to someone who can handle them in a more
-coherent and clever way. FRP in Elm makes it possible to describe *all*
+ [frp]: http://elm-lang.org/learn/What-is-FRP.elm
+
+Rendering is a good example of a side-effect that is managed by Elm&rsquo;s
+runtime. All rendering is managed by [sending data structures to and from the
+runtime](http://elm-lang.org/learn/Interactive-UI-Elements.elm). What we are
+really doing is saying, &ldquo;hey runtime, please render this and let me know
+if anyone clicks on it.&rdquo; We are effectively pushing the side-effects out
+of our program to someone who can handle them in a more coherent and clever
+way. In the case of rendering, the runtime does some diffing to try to do a
+minimal redraw. This technique is becoming more efficient and widely known as
+recent projects like React and Om lead the way in optimizing the heck out of
+the diffing process. This general approach is great for making UI code fast,
+modular, and reliable, and FRP in Elm makes it possible to describe *all*
 side-effects in this way.
 
 So FRP in Elm means everything passes through the runtime in a coherent and
@@ -399,10 +381,10 @@ flexible, and easy to use. Some ideas for improvements along those lines are:
     an option to plot any watched number as a function of time.
 
   * **Visualize the signal graph** &mdash; In Laszlo's original version of the
-    debugger, all signal graphs were visualized. These graphs can be complicated
-    and hard to navigate as the signal graphs grows. Perhaps this is a better
-    approach than `Debug.watch` though, so we should try to overcome these
-    challenges.
+    debugger, all signal graphs were visualized (FRP in pictures). These graphs
+    can be complicated and hard to navigate as the signal graphs grows. Perhaps
+    this will ultimately be a better approach than `Debug.watch` though, so we
+    should try to overcome these challenges.
 
 I think there is a lot more we can do from here, and I am really excited to see
 how far these ideas can go. As with everything in [the elm-lang
@@ -426,6 +408,27 @@ Huge thanks to [Laszlo](https://github.com/laszlopandy/) for conceiving and
 implementing the debugger. I am still shocked you were able to do all this.
 More generally, thank you to [Prezi](https://prezi.com) and the Elm community
 for supporting Elm in so many ways!
+
+## Additional Resources
+
+[Laszlo&rsquo;s talk][talk] from [Elm Workshop 2013][workshop] is what started
+this project. Laszlo is a really good presenter and covers many thing more
+gracefully than this post. He also took a much more ambitious approach to
+visualizing a running program. This post used `Debug.watch` where Laszlo instead
+visualized the entire signal graph, fully exposing the details of FRP.
+
+ [talk]: https://www.youtube.com/watch?v=lK0vph1zR8s&list=PLrJ2mLJTxzXcBvJr5iZKetpeqHOJYJ8AW
+ [workshop]: https://www.youtube.com/channel/UCzbnVYNyCwES9u3dqYZ-0WQ
+
+<iframe width="640"
+        height="360"
+        src="//www.youtube.com/embed/lK0vph1zR8s?list=PLrJ2mLJTxzXcBvJr5iZKetpeqHOJYJ8AW"
+        frameborder="0"
+        allowfullscreen></iframe>
+
+The talk itself is about 20 minutes, but we included the 20 minutes of Q&A
+because we felt it was really helpful in clarifying the limitations and future
+of the debugger.
 
 |]
 
