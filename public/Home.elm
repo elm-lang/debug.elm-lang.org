@@ -77,15 +77,15 @@ in a way that has never been possible before.
 The only problem is that no one has been able to implement these ideas yet.
 Perhaps shockingly, the core barrier is *language design*. Adding pause, rewind,
 and replay is catastrophic for traditional imperative languages where it is
-extremely difficult to avoid repeating side-effects like writing to disk,
+practically impossible to avoid repeating side-effects like writing to disk,
 sending HTTP requests, or modifying variables.
 
 At [Elm Workshop 2013][workshop], [Laszlo Pandy](https://github.com/laszlopandy/)
-presented [a practical path to implementating these ideas][talk] with working
-prototype he called the Elm Debugger. A practical implementation relies
-crucially on [Functional Reactive Programming][frp] and purity to safely manage
-events and side-effects, all of which is very natural in Elm. Without these core
-language design choices, a reactive debugger quickly becomes intractable.
+presented [a working prototype of these ideas][talk] he called the Elm Debugger.
+A practical implementation relies crucially on [Functional Reactive
+Programming][frp] and purity to safely manage events and side-effects. This is
+very natural in Elm, but for languages without these core design choices, a
+reactive debugger quickly becomes intractable.
 
 The rest of this post is
 dedicated to [live examples](#three-examples), describing
