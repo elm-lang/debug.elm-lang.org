@@ -60,45 +60,32 @@ code > span.er { color: #D30102; font-weight: bold; }
 
  [interactive]: http://en.wikipedia.org/wiki/Interactive_programming
  [inventing]: https://www.youtube.com/watch?v=PUv66718DII
-
-## How do you visualize the *meaning* of a program?
-
-It is easy enough to show the program itself in a text-editor, but is it
-possible to visualize what that program does? What it is going to do? What
-it did already?
-
-In the talk [Inventing on Principle][inventing] and its elaboration in the essay
-[Learnable Programming](http://worrydream.com/LearnableProgramming/),
-[Bret Victor](http://worrydream.com/) demonstrated some very compelling ways to
-close the gap between writing a program and running a program. With such
-immediate feedback, it becomes easy to explore the *meaning* of your program
-in a way that has never been possible before.
-
-The only problem is that no one has been able to implement these ideas yet.
-Perhaps shockingly, the core barrier is *language design*. Adding pause, rewind,
-and replay is catastrophic for traditional imperative languages where it is
-practically impossible to avoid repeating side-effects like writing to disk,
-sending HTTP requests, or modifying variables.
-
-At [Elm Workshop 2013][workshop], [Laszlo Pandy](https://github.com/laszlopandy/)
-presented [a working prototype of these ideas][talk] he called the Elm Debugger.
-A practical implementation relies crucially on [Functional Reactive
-Programming][frp] and purity to safely manage events and side-effects. This is
-very natural in Elm, but for languages without these core design choices, a
-reactive debugger quickly becomes intractable.
-
-The rest of this post is
-dedicated to [live examples](#three-examples), describing
-[how it works](#how-Elm-makes-this-possible), and outlining
-[what is next](#what-is-next).
-
  [frp]: http://elm-lang.org/learn/What-is-FRP.elm
+ [hotswap]: http://elm-lang.org/blog/Interactive-Programming.elm
+ [laszlo]: https://github.com/laszlopandy/
+
+Our debuggers are limited by our programming languages. In languages like
+C++, Java, and JavaScript, we step through stack traces time because that is the
+most consice way to express the meaning of an imperative program. We step forward,
+one command at a time, mutating variables, writing to files, sending requests.
+These debuggers typically only go forward because each step may *destroy* past
+state. In short, **low-level languages need low-level debuggers.**
+
+So what does a debugger look like for a high-level language like Elm? What is
+possible when you have purity, [FRP][frp], and [hot-swapping][hotswap]?
+At Elm Workshop 2013, Laszlo Pandy [presented the Elm Debugger][talk].
+Inspired by talks like [Inventing on Principle][inventing], Laszlo implemented
+a debugger that lets you travel backwards and forwards in time. It lets you
+change history. On a deeper level, it lets you visualize and interact with a
+program&rsquo;s *meaning*. It lets you *see* how a program changes over time.
 
 ## Three Examples
 
-Our broad goal is to visualize the *meaning* of a program. How does my program
-change over time? Our first example shows the debugger on a very simple Elm
-program, just demonstrating the basics:
+To really commit to the idea of visualizing and interacting with meaning, each
+example is paired with a very short video demo and a link to the online debugger.
+
+Our first example demonstrates the basics of the debugger. We use a very simple
+stamping program to see the ability to to time travel and change history:
 
 |]
 
@@ -173,12 +160,10 @@ Debug.trace : String -> Element -> Element
 ```
 
 A visual element is tagged with a string that serves as a unique ID throughout
-the program, allowing the debugger to track Mario over time. This API is still
-very fluid and possibly buggy, but I think it gives a flavor of what kind of
-debugging features you can start to expose to the programmer with this system.
-It is easy to imagine toggling tracing on and off for specific elements or to
-have an IDE that is able to add tracing tags without actually modifying the
-source code explicitly.
+the program, allowing the debugger to track Mario over time. It is easy to
+imagine toggling tracing on and off for specific elements or to have an IDE
+that is able to add tracing tags without actually modifying the source code
+explicitly.
 
 Most typical online applications are not interactive games though. Fortunately
 this debugger is handy for debugging issues with text fields, buttons, hovering,
@@ -316,7 +301,7 @@ world.
 
 Purity is a bit more subtle when the term is applied to a language.
 It does not mean that there are no side-effects at all, only that
-side-effects are managed by explicitly. To perform a side-effect, you first
+side-effects are modelled explicitly. To perform a side-effect, you first
 create a data structure that represents what you want to do. You then give that
 data structure to the language&rsquo;s runtime system to actually perform the
 side-effect.
@@ -328,7 +313,7 @@ Imagine opening a file and rewinding back and forth through the code that writes
 to it. The act of debugging would trash your file. So impurity can easily
 *introduce* new bugs into your program as you debug!
 
-Because Elm represents side-effects explicitly as data, the debugger just needs
+Because Elm represents side-effects explicitly as values, the debugger just needs
 to tell the runtime not to perform any side-effects during replay to avoid these
 issues.
 
