@@ -74,7 +74,7 @@ title =
     [ link "/" <| leftAligned <| bigWords
     , spacer 10 4
     , leftAligned . Text.height 16 . typeface faces . Text.color C.mediumGrey <|
-          toText "Control time and change the future with Elm&rsquo;s new debugger."
+          toText "Control time and change history with Elm&rsquo;s new debugger."
     ]
 
 footer outer = container outer footerHeight footerPosition <| Text.centered footerWords
