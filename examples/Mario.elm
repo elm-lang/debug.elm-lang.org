@@ -26,7 +26,8 @@ walk {x} mario =
                         | otherwise -> mario.dir }
 
 step (t,dir) mario =
-  Debug.watch "Mario" (physics t (walk dir (jump dir (gravity t mario))))
+  Debug.watchSummary "y-velocity" .vy
+  (physics t (walk dir (jump dir (gravity t mario))))
 
 
 -- DISPLAY
