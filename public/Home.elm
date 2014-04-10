@@ -63,6 +63,7 @@ code > span.er { color: #D30102; font-weight: bold; }
  [frp]: http://elm-lang.org/learn/What-is-FRP.elm
  [hotswap]: http://elm-lang.org/blog/Interactive-Programming.elm
  [laszlo]: https://github.com/laszlopandy/
+ [src]: https://github.com/elm-lang/elm-debugger
 
 Our debuggers are limited by our programming languages. In languages like
 C++, Java, and JavaScript, we step through stack traces time because that is the
@@ -73,7 +74,7 @@ state. In short, **low-level languages need low-level debuggers.**
 
 So what does a debugger look like for a high-level language like Elm? What is
 possible when you have purity, [FRP][frp], and [hot-swapping][hotswap]?
-At Elm Workshop 2013, Laszlo Pandy [presented the Elm Debugger][talk].
+At Elm Workshop 2013, Laszlo Pandy presented [the Elm Debugger][src].
 Inspired by talks like [Inventing on Principle][inventing], Laszlo implemented
 a debugger that lets you travel backwards and forwards in time. It lets you
 change history. On a deeper level, it lets you visualize and interact with a
