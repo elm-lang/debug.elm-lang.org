@@ -83,7 +83,7 @@ program&rsquo;s *meaning*. It lets you *see* how a program changes over time.
 
 To really commit to the idea of visualizing and interacting with meaning, each
 example is paired with a very short video demo and a link to the online
-debugger. Use them, they are better than text alone!
+debugger. The videos will help whether even if they are muted, so watch them!
 
 Our first example demonstrates the basics of the debugger. We use a very simple
 stamping program to see the ability to to time travel and change history:
@@ -152,7 +152,7 @@ code > span.re { }
 code > span.er { color: #D30102; font-weight: bold; }
 </style>
 
-At about 20 seconds in, we begin tracing Mario&rsquo;s path through time. This
+At about 30 seconds in, we begin tracing Mario&rsquo;s path through time. This
 trace is crucial to visualizing the meaning of our program. To explore the
 double jump bug, we need to see how changing our code changes Mario&rsquo;s
 path. Laszlo introduced this ability with the following function:
@@ -199,28 +199,31 @@ try video name =
 
 stamps w = width w [markdown|
 
-<video width="640" height="200" controls poster="/videos/Stamps.png">
-  <source src="/videos/Stamps.mp4" type="video/mp4">
-  <source src="/videos/Stamps.webm" type="video/webm">
-</video>
+<iframe width="640"
+        height="200"
+        src="//www.youtube.com/embed/zybahE0aQqA?rel=0&showinfo=0"
+        frameborder="0"
+        allowfullscreen></iframe>
 
 |]
 
 mario w = width w [markdown|
 
-<video width="636" height="200" controls poster="/videos/Mario.png">
-  <source src="/videos/Mario.mp4" type="video/mp4">
-  <source src="/videos/Mario.webm" type="video/webm">
-</video>
+<iframe width="640"
+        height="200"
+        src="//www.youtube.com/embed/RUeLd7T7Xi4?rel=0&showinfo=0"
+        frameborder="0"
+        allowfullscreen></iframe>
 
 |]
 
 reverser w = width w [markdown|
 
-<video width="640" height="200" controls poster="/videos/NumbersOnly.png">
-  <source src="/videos/NumbersOnly.mp4" type="video/mp4">
-  <source src="/videos/NumbersOnly.webm" type="video/webm">
-</video>
+<iframe width="640"
+        height="200"
+        src="//www.youtube.com/embed/Z9IRkGwlLlM?rel=0&showinfo=0"
+        frameborder="0"
+        allowfullscreen></iframe>
 
 |]
 
