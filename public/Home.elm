@@ -272,11 +272,9 @@ rather than changing code, performing the sequence,
 
 ## How Elm makes this possible
 
-As stated in the intro, **language design is vital to making this debugger work.**
-This is the reason that over the past twenty years, the combined forces of
-Google, Mozilla, Apple, Microsoft, and the entire JS community have not created
-a time travelling debugger. This section dives into how purity and FRP are key
-to making time travel relatively easy to implement.
+As stated in the intro, **language design is vital to making this debugger
+practical.** This section dives into how purity and FRP are key to making time
+travel relatively easy to implement.
 
 ### Purity
 
@@ -337,20 +335,25 @@ acts on the outgoing events, there will not be unwanted side-effects.
  [signals]: http://library.elm-lang.org/catalog/evancz-Elm/0.12/Signal
 
 So at the root of the debugger is the design of Elm itself. If you do not start
-with the right design choices at the language level, a reactive debugger quickly
-becomes computationally intractable. Even languages that partially fulfill
-the necessary design requirements will have serious problems.
+with the right design choices at the language level, creating a time-travelling
+debugger quickly becomes extremely complex. Even languages that partially fulfill
+the necessary design requirements will have serious challenges.
 
 ## What&rsquo;s next?
 
-The major goal is to make it easy to pair the debugger with your preferred
-editor. Perhaps this means pairing the debugger with `elm-server` or providing
-a general API that IDEs can interact with over HTTP. Aside from the big goal,
-there is still a lot of work to be done on making the debugger beautiful,
-flexible, and easy to use. Some ideas for improvements along those lines are:
+Like Elm itself, this debugger is intended to be a practical tool. Recent
+releases of Elm have all been focused on improving practical matters, like
+[JS interop](http://elm-lang.org/blog/announce/0.11.elm) and
+[web forms](http://elm-lang.org/blog/announce/0.12.elm). The debugger
+starts to fill in the tooling story for Elm.
+
+That said, I think there is a lot more we can do with the debugger. As with
+everything in [the elm-lang organization](https://github.com/elm-lang), the
+debugger is [open source](https://github.com/elm-lang/elm-debugger) under BSD3
+and contributors are more than welcome! Some ideas for improvements are:
 
   * **Modularize** &mdash; We would like to release the debugger as a component
-    that can be dropped into an existing IDE.
+    that can integrate with existing IDEs.
 
   * **Unpause** &mdash; For more complex debugging sessions, it would be great
     to unpause your program at any time and record a new sequence of events from
@@ -380,21 +383,8 @@ flexible, and easy to use. Some ideas for improvements along those lines are:
     this will ultimately be a better approach than `Debug.watch` though, so we
     should try to overcome these challenges.
 
-I think there is a lot more we can do from here, and I am really excited to see
-how far these ideas can go. As with everything in [the elm-lang
-organization](https://github.com/elm-lang), the debugger is entirely [open
-source](https://github.com/elm-lang/elm-debugger) under BSD3 and contributors
-are more than welcome!
-
-There is still a lot to do to make debuggers like this typical in industry.
-There is of course much to do in terms of implementation, but I think the bigger
-challenge is cultural. Terms like immutability and purity often scare people,
-but they are *essential* to creating better tools and in the end, better
-programs. If there is one thing you take away from this it should be that
-**language design matters**. This debugger is *not* something you can easily
-replicate in JS if you just try really hard. The choices a language makes
-regarding immutability and purity directly determine whether a debugger like
-this is feasible.
+There are tons of interesting things to do with a time-travelling debugger, so
+I am very excited to see how far we can take these ideas!
 
 ## Thanks
 
