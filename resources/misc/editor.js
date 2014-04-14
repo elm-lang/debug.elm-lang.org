@@ -563,7 +563,7 @@ function initValueSlider() {
         console.log("cursor");
     });
 
-    slider.addEventListener('change', function(e) {
+    function slide(e) {
         var cursor = editor.getCursor();
         var token = editor.getTokenAt(cursor);
         if (token.type === 'number') {
@@ -575,5 +575,8 @@ function initValueSlider() {
             editor.getDoc().replaceRange(v, getFrom(cursor, token), getTo(cursor, token));
             replacingRange = false;
         }
-    });
+    }
+
+    slider.addEventListener('input', slide);
+    slider.addEventListener('change', slide);
 }
