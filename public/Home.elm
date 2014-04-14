@@ -72,7 +72,8 @@ one command at a time, mutating variables, writing to files, sending requests.
 These debuggers typically only go forward because each step may *destroy* past
 state. In short, low-level languages lead to low-level debuggers.
 
-So what does a debugger look like for a high-level language like Elm? What is
+So what does a debugger look like for a high-level language like
+[Elm](http://elm-lang.org/)? What is
 possible when you have purity, [FRP][frp], and [hot-swapping][hotswap]?
 At Elm Workshop 2013, Laszlo Pandy presented [the Elm Debugger][src].
 Inspired by talks like Bret Victor&rsquo;s [Inventing on Principle][inventing],
