@@ -1,4 +1,4 @@
-# Elm Debugger - [live online](http://debug.elm-lang.org/)
+# Elm Debugger
 
 The debugger was conceived and implemented by [Laszlo
 Pandy](https://github.com/laszlopandy/). He introduced it during [his
