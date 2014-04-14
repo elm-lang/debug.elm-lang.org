@@ -66,28 +66,30 @@ code > span.er { color: #D30102; font-weight: bold; }
  [src]: https://github.com/elm-lang/elm-debugger
 
 Our debuggers are limited by our programming languages. In languages like
-C++, Java, and JavaScript, we step through stack traces time because that is the
+C++, Java, and JavaScript, we step through stack traces because that is the
 most consice way to express the meaning of an imperative program. We step forward,
 one command at a time, mutating variables, writing to files, sending requests.
 These debuggers typically only go forward because each step may *destroy* past
-state. In short, **low-level languages need low-level debuggers.**
+state. In short, low-level languages lead to low-level debuggers.
 
 So what does a debugger look like for a high-level language like Elm? What is
 possible when you have purity, [FRP][frp], and [hot-swapping][hotswap]?
 At Elm Workshop 2013, Laszlo Pandy presented [the Elm Debugger][src].
-Inspired by talks like [Inventing on Principle][inventing], Laszlo implemented
-a debugger that lets you travel backwards and forwards in time. It lets you
-change history. On a deeper level, it lets you visualize and interact with a
-program&rsquo;s *meaning*. It lets you *see* how a program changes over time.
+Inspired by talks like Bret Victor&rsquo;s [Inventing on Principle][inventing],
+Laszlo implemented a debugger that lets you travel backwards and forwards in
+time. It lets you change history. On a deeper level, it lets you visualize and
+interact with a program&rsquo;s *meaning*. It lets you *see* how a program
+changes over time.
 
 ## Three Examples
 
-To really commit to the idea of visualizing and interacting with meaning, each
-example is paired with a very short video demo and a link to the online
-debugger. The videos will help whether even if they are muted, so watch them!
+The Elm Debugger is all about visualizing and interacting with meaning, so in
+that spirit, the following three examples are paired with a short video demo
+and a link to the online debugger. The videos will help even if they are muted,
+so watch them!
 
 Our first example demonstrates the basics of the debugger. We use a very simple
-stamping program to see the ability to to time travel and change history:
+stamping program to see the ability to time travel and change history:
 
 |]
 
@@ -274,7 +276,7 @@ As stated in the intro, **language design is vital to making this debugger work.
 This is the reason that over the past twenty years, the combined forces of
 Google, Mozilla, Apple, Microsoft, and the entire JS community have not created
 a time travelling debugger. This section dives into how purity and FRP are key
-to making it happen.
+to making time travel relatively easy to implement.
 
 ### Purity
 
@@ -348,7 +350,7 @@ acts on the outgoing events, there will not be unwanted side-effects.
 
 So at the root of the debugger is the design of Elm itself. If you do not start
 with the right design choices at the language level, a reactive debugger quickly
-becomes computationally intractable. Even in languages that partially fulfill
+becomes computationally intractable. Even languages that partially fulfill
 the necessary design requirements will have serious problems.
 
 ## What is next?
@@ -416,7 +418,7 @@ for supporting Elm in so many ways!
 ## Additional Resources
 
 [Laszlo&rsquo;s talk][talk] from [Elm Workshop 2013][workshop] is what started
-this project. Laszlo is a really good presenter and covers many thing more
+this project. Laszlo is a really good presenter and covers many things more
 gracefully than this post. He also took a much more ambitious approach to
 visualizing a running program. This post used `Debug.watch` where Laszlo instead
 visualized the entire signal graph, fully exposing the details of FRP.
@@ -426,7 +428,7 @@ visualized the entire signal graph, fully exposing the details of FRP.
 
 <iframe width="640"
         height="360"
-        src="//www.youtube.com/embed/lK0vph1zR8s?list=PLrJ2mLJTxzXcBvJr5iZKetpeqHOJYJ8AW"
+        src="//www.youtube.com/embed/lK0vph1zR8s"
         frameborder="0"
         allowfullscreen></iframe>
 

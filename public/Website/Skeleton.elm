@@ -37,7 +37,7 @@ logoButton =
                 |> container tileSize tileSize middle
                 |> color (rgb 57 59 58)
     in
-        Input.customButton clicks.handle () (box "muted") (box "color") (box "color")
+        Input.customButton clicks.handle () (box "color") (box "color") (box "muted")
 
 browseButton : Element
 browseButton = 
