@@ -74,7 +74,7 @@ title =
     [ link "/" <| leftAligned <| bigWords
     , spacer 10 4
     , leftAligned . Text.height 16 . typeface faces . Text.color C.mediumGrey <|
-          toText "Pause, rewind, and replay any program. Debug by changing history."
+          toText "Pause, rewind, and replay any Elm program. Debug by changing history."
     ]
 
 footer outer = container outer footerHeight footerPosition <| Text.centered footerWords
