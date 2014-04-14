@@ -91,12 +91,14 @@ function updateWatches() {
 var watchesDiv = document.getElementById("watches");
 var statusText = document.getElementById("statusText");
 var timeSlider = document.getElementById("timeSlider");
-timeSlider.addEventListener('change', function(e) {
-	console.log("Time sliding");
-	elmDebugger.stepTo(+timeSlider.value);
-	updateStatus();
-	updateWatches();
-});
+timeSlider.addEventListener('input',  slide);
+timeSlider.addEventListener('change', slide);
+function slide(e) {
+    console.log("Time sliding");
+    elmDebugger.stepTo(+timeSlider.value);
+    updateStatus();
+    updateWatches();
+}
 
 var pauseButton = document.getElementById('buttonPause');
 pauseButton.addEventListener('click', function(e) {
