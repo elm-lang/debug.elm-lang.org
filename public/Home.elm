@@ -290,7 +290,10 @@ It does not mean that there are no side-effects at all, only that
 side-effects are modelled explicitly. To perform a side-effect, you first
 create a data structure that represents what you want to do. You then give that
 data structure to the language&rsquo;s runtime system to actually perform the
-side-effect.
+side-effect. (A [runtime system][runtime] does the dirty work of the language,
+like garbage collection and scheduling.)
+
+  [runtime]: http://en.wikipedia.org/wiki/Run-time_system
 
 Now why is this important for the debugger? If the programmer could make HTTP
 requests or open files at any time, playback would be much more complicated.
@@ -299,9 +302,9 @@ Imagine opening a file and rewinding back and forth through the code that writes
 to it. The act of debugging would trash your file. So impurity can easily
 *introduce* new bugs into your program as you debug!
 
-Because Elm represents side-effects explicitly as values, the debugger just needs
-to tell the runtime not to perform any side-effects during replay to avoid these
-issues.
+Because Elm represents side-effects explicitly as values, the debugger just
+needs to tell the runtime not to perform any side-effects during replay to
+avoid these issues.
 
 ### Immutability
 
@@ -311,49 +314,34 @@ of values, we would have the same problem as arbitrarily writing to a file. We
 would trash our values by rewinding back and forth through the program,
 introducing bugs that would never appear outside of the debugger.
 
-So purity actually encompasses the concept of immutability, but I single it out
-with its own section mostly to make the point that immutability alone is not
-enough. A program that can arbitrarily write to disk or make HTTP requests is
-still very difficult to rerun safely and reliably.
+Mutating a value is a side-effect, so purity actually encompasses the concept
+of immutability. I single immutibility out with its own section mostly to make
+the point that immutability alone is not enough. A program that can arbitrarily
+write to disk or make HTTP requests is still very difficult to rerun safely and
+reliably.
 
 ### Functional Reactive Programming
 
-So purity makes it *safe* to pause and rewind programs, but it does not actually
+Purity makes it *safe* to pause and rewind programs, but it does not actually
 tell us *how* to do it. We need to somehow model incoming and outging events to
 track how our program interacts with the world over time. [Functional Reactive
-Programming][frp] (FRP) exists to do exactly that. FRP was introduced in Elm
-specifically to answer the question, &ldquo;how can values change over time in
-a pure language?&rdquo; Elm&rsquo;s signals provide a simple API for managing
-events as they enter and exit an Elm program. To perform side-effects
-you send data structures out of the program to the runtime. To observe the
-results of a side-effect, they are passed back in from the runtime.
-
- [frp]: http://elm-lang.org/learn/What-is-FRP.elm
-
-Rendering is a good example of a side-effect that is managed by Elm&rsquo;s
-runtime. All rendering is managed by [sending data structures to and from the
-runtime](http://elm-lang.org/learn/Interactive-UI-Elements.elm). What we are
-really doing is saying, &ldquo;hey runtime, please render this and let me know
-if anyone clicks on it.&rdquo; We are effectively pushing the side-effects out
-of our program to someone who can handle them in a more coherent and clever
-way. In the case of rendering, the runtime does some diffing to try to do a
-minimal redraw. This technique is becoming more efficient and widely known as
-recent projects like React and Om lead the way in optimizing the heck out of
-the diffing process. This general approach is great for making UI code fast,
-modular, and reliable, and FRP in Elm makes it possible to describe *all*
-side-effects in this way.
-
-So FRP in Elm means everything passes through the runtime in a coherent and
-well-defined way. This makes managing replay a matter of recording the incoming
+Programming][frp] (FRP) exists to do exactly that. Elm&rsquo;s [signals][]
+are an API for managing events as they enter and exit an Elm program. To perform
+side-effects you send data structures out of the program to the runtime. To
+observe the results of a side-effect, they are passed back in from the runtime.
+This makes managing replay a matter of recording the incoming
 events to the program and discarding the outgoing events. As long as no one
 acts on the outgoing events, there will not be unwanted side-effects.
+
+ [frp]: http://elm-lang.org/learn/What-is-FRP.elm
+ [signals]: http://library.elm-lang.org/catalog/evancz-Elm/0.12/Signal
 
 So at the root of the debugger is the design of Elm itself. If you do not start
 with the right design choices at the language level, a reactive debugger quickly
 becomes computationally intractable. Even languages that partially fulfill
 the necessary design requirements will have serious problems.
 
-## What is next?
+## What&rsquo;s next?
 
 The major goal is to make it easy to pair the debugger with your preferred
 editor. Perhaps this means pairing the debugger with `elm-server` or providing
