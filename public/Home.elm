@@ -67,7 +67,7 @@ code > span.er { color: #D30102; font-weight: bold; }
 
 Our debuggers are limited by our programming languages. In languages like
 C++, Java, and JavaScript, we step through stack traces because that is the
-most consice way to express the meaning of an imperative program. We step forward,
+most concise way to express the meaning of an imperative program. We step forward,
 one command at a time, mutating variables, writing to files, sending requests.
 These debuggers typically only go forward because each step may *destroy* past
 state. In short, low-level languages lead to low-level debuggers.
@@ -314,7 +314,7 @@ would trash our values by rewinding back and forth through the program,
 introducing bugs that would never appear outside of the debugger.
 
 Mutating a value is a side-effect, so purity actually encompasses the concept
-of immutability. I single immutibility out with its own section mostly to make
+of immutability. I single immutability out with its own section mostly to make
 the point that immutability alone is not enough. A program that can arbitrarily
 write to disk or make HTTP requests is still very difficult to rerun safely and
 reliably.
@@ -322,7 +322,7 @@ reliably.
 ### Functional Reactive Programming
 
 Purity makes it *safe* to pause and rewind programs, but it does not actually
-tell us *how* to do it. We need to somehow model incoming and outging events to
+tell us *how* to do it. We need to somehow model incoming and outgoing events to
 track how our program interacts with the world over time. [Functional Reactive
 Programming][frp] (FRP) exists to do exactly that. Elm&rsquo;s [signals][]
 are an API for managing events as they enter and exit an Elm program. To perform
