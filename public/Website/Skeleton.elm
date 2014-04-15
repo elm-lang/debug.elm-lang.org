@@ -66,7 +66,7 @@ faces = [ "futura","century gothic","twentieth century","calibri","verdana","hel
 
 bigWords : Text
 bigWords = Text.height 40 <| typeface faces <| Text.color C.mediumGrey <|
-           toText "A Time Travelling Debugger"
+           toText "Elm&rsquo;s Time Traveling Debugger"
 
 title : Element
 title =
@@ -74,7 +74,7 @@ title =
     [ link "/" <| leftAligned <| bigWords
     , spacer 10 4
     , leftAligned . Text.height 16 . typeface faces . Text.color C.mediumGrey <|
-          toText "Pause, rewind, and replay any Elm program. Debug by changing history."
+          toText "Pause, rewind, replay, and change history."
     ]
 
 footer outer = container outer footerHeight footerPosition <| Text.centered footerWords
