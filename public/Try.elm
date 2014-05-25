@@ -13,4 +13,9 @@ examples and start debugging your own
   * <a href="/edit/Mario.elm" target="_top">Mario</a>
   * <a href="/edit/NumbersOnly.elm" target="_top">Numbers-only field</a>
 
+Or even debug in 3D:
+
+  * <a href="/edit/Thwomp.elm" target="_top">Thwomp</a>
+  * <a href="/edit/FirstPerson.elm" target="_top">First Person Navigation</a>
+
 |]
