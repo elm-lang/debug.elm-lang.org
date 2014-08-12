@@ -4,6 +4,7 @@ import String
 import Website.ColorScheme as C
 import Website.Skeleton (home,faces)
 import Graphics.Input as Input
+import Text as Text
 import Window
 
 port title : String
