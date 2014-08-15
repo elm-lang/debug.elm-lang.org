@@ -16,7 +16,7 @@ main = defaultMainWithHooks simpleUserHooks { postBuild = myPostBuild }
 myPostBuild :: Args -> BuildFlags -> PackageDescription -> LocalBuildInfo -> IO ()
 myPostBuild args flags pd lbi =
   do putStrLn "Building debug panel interface"
-     buildInterface ("elm-server" </> "slider")
+     buildInterface ("elm-reactor" </> "slider")
      concatJS
      copyPanelImages
 
@@ -29,7 +29,7 @@ buildInterface workingDir =
                 putStrLn "Build failed: debuggerInterface"
             ExitSuccess ->
                 do let compiledFile = workingDir </> "build" </> "debuggerInterface.js"
-                   let destinationFile = "elm-server" </> "assets" </> "_reactor" </> "debuggerInterface.js"
+                   let destinationFile = "elm-reactor" </> "assets" </> "_reactor" </> "debuggerInterface.js"
                    copyFile compiledFile destinationFile
                    removeFile compiledFile
        removeEverything workingDir "Slider.elm"
@@ -61,9 +61,9 @@ buildInterface workingDir =
 concatJS :: IO ()
 concatJS =
   do let files =
-          [ "elm-server" </> "assets" </> "_reactor" </> "debuggerInterface.js"
-          , "elm-server" </> "assets" </> "_reactor" </> "toString.js"
-          , "elm-server" </> "assets" </> "_reactor" </> "core.js"
+          [ "elm-reactor" </> "assets" </> "_reactor" </> "debuggerInterface.js"
+          , "elm-reactor" </> "assets" </> "_reactor" </> "toString.js"
+          , "elm-reactor" </> "assets" </> "_reactor" </> "core.js"
           , "resources" </> "debugger" </> "debug-panel.js"
           ]
      megaJS <- concat `fmap` mapM readFile files
@@ -72,7 +72,7 @@ concatJS =
 
 copyPanelImages :: IO ()
 copyPanelImages =
-  do let serverImageDir = "elm-server" </> "assets" </> "_reactor" </> "debugger"
+  do let serverImageDir = "elm-reactor" </> "assets" </> "_reactor" </> "debugger"
      files <- getDirectoryContents serverImageDir
      let images = filter (\x -> ".png" == takeExtensions x) files
      let destinationDir = "resources" </> "_reactor" </> "debugger"
