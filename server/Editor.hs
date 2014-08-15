@@ -27,10 +27,7 @@ ideBuilder title input output =
       preEscapedToMarkup $
          concat [ "<frameset cols=\"50%,50%\">\n"
                 , "  <frame name=\"input\" src=\"/code/", input, "\" />\n"
-                , "  <frameset rows=\"*,110\">\n"
-                , "    <frame name=\"output\" src=\"", output, "\" />\n"
-                , "    <frame name=\"debug\" src=\"/debugger/elm-debugger.html\" />\n"
-                , "  </frameset>"
+                , "  <frame name=\"output\" src=\"", output, "\" />\n"
                 , "</frameset>" ]
 
 -- | list of themes to use with CodeMirror
