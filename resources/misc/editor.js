@@ -14,30 +14,7 @@ function hotSwap() {
         if (request.readyState === 4
             && request.status >= 200
             && request.status < 300) {
-            var result = JSON.parse(request.responseText);
-            var top = self.parent;
-            var js = result.success;
-            if (js) {
-                var error = top.output.document.getElementById('ErrorMessage');
-                if (error) {
-                    error.parentNode.removeChild(error);
-                }
-                top.output.eval(js);
-                var moduleStr = js.substring(0,js.indexOf('=')).replace(/\s/g,'');
-                var module = top.output.eval(moduleStr);
-                if (top.output.Elm.Debugger) {
-                    var debuggerState = top.output.Elm.Debugger.getHotSwapState();
-                    top.output.runningElmModule.dispose();
-                    top.output.Elm.Debugger.dispose();
-
-                    var wrappedModule = top.output.Elm.debuggerAttach(module, debuggerState);
-                    top.output.runningElmModule = top.output.Elm.fullscreen(wrappedModule);
-                }
-                else {
-                    top.output.runningElmModule =
-                        top.output.runningElmModule.swap(module);
-                }
-            }
+            top.output.runningElmModule.hotSwap(request.responseText);
         }
     };
     editor.save();
