@@ -11,7 +11,7 @@ topBar k n =
         k' = toFloat k
         segs = map (\i -> round (n' * toFloat i / k')) [1..k]
         ws = zipWith (-) segs (0::segs)
-        accentCycle = concatMap (\_ -> accents) [ 0 .. k `div` 5 ]
+        accentCycle = concatMap (\_ -> accents) [ 0 .. k // 5 ]
     in  flow right <| zipWith (\c w -> color c <| spacer w 5) accentCycle ws
 
 scene msg (w,h) =
@@ -20,9 +20,13 @@ scene msg (w,h) =
 box e =
   let w = widthOf e
       h = heightOf e
-  in  flow down [ topBar 5 (w+40)
-                , color C.mediumGrey . container (w+40) (h+11) midTop .
-                        color C.lightGrey  . container (w+38) (h+10) midTop <| e
-                ]
+  in 
+      flow down
+      [ topBar 5 (w+40)
+      , container (w+38) (h+10) midTop e
+          |> color C.lightGrey
+          |> container (w+40) (h+11) midTop
+          |> color C.mediumGrey
+      ]
 
 report msg = scene msg <~ Window.dimensions

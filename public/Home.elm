@@ -188,8 +188,12 @@ try : Element -> String -> Element
 try video name =
     let href = "/edit/" ++ name ++ ".elm"
 
-        tryIt = leftAligned . Text.color C.lightGrey . typeface faces .
-                Text.height 36 <| toText "Try it!"
+        tryIt =
+            toText "Try it!"
+                |> Text.height 36
+                |> typeface faces
+                |> Text.color C.lightGrey
+                |> leftAligned
 
         box alpha =
             color (rgba 96 181 204 alpha) <| container 120 200 middle tryIt

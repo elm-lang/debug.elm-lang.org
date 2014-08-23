@@ -65,12 +65,14 @@ main =
                         ~ lift2 view Window.dimensions person
   in  lift2 scene Window.dimensions entities
 
+msg = "Walk around with a first person perspective.\n" ++
+      "Arrows keys to move, space bar to jump."
+
 scene : (Int,Int) -> [Entity] -> Element
 scene (w,h) entities =
     layers [ webgl (w,h) entities
-           , container w 100 (midLeftAt (absolute 40) (relative 0.5)) . plainText <|
-               "Walk around with a first person perspective.\n" ++
-               "Arrows keys to move, space bar to jump."
+           , plainText msg
+               |> container w 100 (midLeftAt (absolute 40) (relative 0.5))
            ]
 
 type Inputs = (Bool, {x:Int, y:Int}, Float)

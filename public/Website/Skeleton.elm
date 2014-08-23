@@ -14,7 +14,7 @@ home bodyFunc = internalHome bodyFunc <~ Window.dimensions
 
 internalHome : (Int -> Element) -> (Int,Int) -> Element
 internalHome bodyFunc (outer,h) =
-    let margin = outer `div` 10
+    let margin = outer // 10
         inner = outer - 2 * homeHeaderHeight
         content = bodyFunc inner
     in
@@ -43,11 +43,11 @@ browseButton : Element
 browseButton = 
     let box c = color c <| container 122 52 middle <|
                 color C.accent4 <| container 120 50 middle <|
-                leftAligned . Text.height 20 . Text.color C.lightGrey <| toText "Browse"
+                leftAligned << Text.height 20 << Text.color C.lightGrey <| toText "Browse"
     in  Input.customButton clicks.handle () (box C.mediumGrey) (box C.lightGrey) (box white)
 
 tileSize = 84
-homeHeaderHeight = 3 * (tileSize `div` 2)
+homeHeaderHeight = 3 * (tileSize // 2)
 homeHeader outer inner =
     color (rgb 60 60 60) <| layers
     [ tiledImage outer homeHeaderHeight "/tile.png"
@@ -58,7 +58,7 @@ homeHeader outer inner =
                    link "/try" <| 
                    color C.mediumGrey <| container 122 52 middle <|
                    color C.accent1 <| container 120 50 middle <|
-                   leftAligned . typeface faces . Text.height 20 . Text.color C.lightGrey <| toText "Debug"
+                   leftAligned << typeface faces << Text.height 20 << Text.color C.lightGrey <| toText "Debug"
                  ]
     ]
 
@@ -73,7 +73,7 @@ title =
     flow down
     [ link "/" <| leftAligned <| bigWords
     , spacer 10 4
-    , leftAligned . Text.height 16 . typeface faces . Text.color C.mediumGrey <|
+    , leftAligned << Text.height 16 << typeface faces << Text.color C.mediumGrey <|
           toText "Pause, rewind, and replay programs. Debug by changing history."
     ]
 
