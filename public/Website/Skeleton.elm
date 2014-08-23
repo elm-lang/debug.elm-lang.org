@@ -3,7 +3,7 @@ module Website.Skeleton (home,faces) where
 import Graphics.Input as Input
 import Graphics.Input.Field as F
 import Website.ColorScheme as C
-import Graphics.Input as Input
+import Text as Text
 import Window
 
 headerHeight = 80

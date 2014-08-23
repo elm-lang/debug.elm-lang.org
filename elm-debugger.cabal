@@ -16,6 +16,8 @@ cabal-version:       >=1.10
 extra-tmp-files:       public/build
                      , public/cache
 
+Build-type:          Custom
+
 executable elm-debugger
   main-is:             Server.hs
   other-extensions:    OverloadedStrings

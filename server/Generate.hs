@@ -41,7 +41,7 @@ html name src =
 
     runFullscreen =
         let moduleName = "Elm." ++ fromMaybe "Main" (Elm.moduleName src)
-        in  "var runningElmModule = Elm.fullscreen(Elm.debuggerAttach(" ++  moduleName ++ "))"
+        in  "var runningElmModule = Elm.debugFullscreen(" ++  moduleName ++ ")"
 
     buildPage content = H.docTypeHtml $ do
         H.head $ do
@@ -54,6 +54,7 @@ html name src =
                \a:hover {text-decoration: underline; color: rgb(234,21,122);}" :: String)
         H.body $ do
           script ! A.src (H.toValue ("/elm-runtime.js" :: String)) $ ""
+          script ! A.src (H.toValue ("/debugger.js" :: String)) $ ""
           content
         googleAnalytics
 
