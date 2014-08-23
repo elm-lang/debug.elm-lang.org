@@ -80,7 +80,7 @@ title =
 footer outer = container outer footerHeight footerPosition <| Text.centered footerWords
 footerPosition = midBottomAt (relative 0.5) (absolute 10)
 footerWords =
-    let href = "https://github.com/elm-lang/elm-debugger"
+    let href = "https://github.com/elm-lang/debug.elm-lang.org"
     in
         Text.color (rgb 145 145 145) <|
             Text.link href (toText "open source") ++ toText " &copy;2014"

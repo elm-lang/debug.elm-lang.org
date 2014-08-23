@@ -64,7 +64,7 @@ code > span.er { color: #D30102; font-weight: bold; }
  [frp]: http://elm-lang.org/learn/What-is-FRP.elm
  [hotswap]: http://elm-lang.org/blog/Interactive-Programming.elm
  [laszlo]: https://github.com/laszlopandy/
- [src]: https://github.com/elm-lang/elm-debugger
+ [src]: https://github.com/elm-lang/debug.elm-lang.org
 
 Our debuggers are limited by our programming languages. In languages like
 C++, Java, and JavaScript, we step through stack traces because that is the
@@ -351,7 +351,7 @@ starts to fill in the tooling story for Elm.
 
 That said, I think there is a lot more we can do with the debugger. As with
 everything in [the elm-lang organization](https://github.com/elm-lang), the
-debugger is [open source](https://github.com/elm-lang/elm-debugger) under BSD3
+debugger is [open source](https://github.com/elm-lang/debug.elm-lang.org) under BSD3
 and contributors are more than welcome! Some ideas for improvements are:
 
   * **Modularize** &mdash; We would like to release the debugger as a component
