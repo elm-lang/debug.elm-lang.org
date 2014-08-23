@@ -1,3 +1,3 @@
 [submodule "elm-reactor"]
 	path = elm-reactor
-	url = git@github.com:elm-lang/elm-reactor.git
+	url = https://github.com/elm-lang/elm-reactor.git
