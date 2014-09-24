@@ -1,6 +1,7 @@
 -- Thanks to The PaperNES Guy for the texture:
 -- http://the-papernes-guy.deviantart.com/art/Thwomps-Thwomps-Thwomps-186879685
 
+import Debug
 import Graphics.WebGL (..)
 import Http (..)
 import Math.Vector2 (Vec2)
@@ -39,6 +40,7 @@ square =
 -- View
 view : (Int,Int) -> (Int,Int) -> Mat4
 view (w',h') (x',y') =
+  Debug.watchSummary "Mouse Position" (\_ -> (x',y')) <|
   let w = toFloat w'
       h = toFloat h'
       x = toFloat x'
