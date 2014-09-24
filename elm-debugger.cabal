@@ -29,7 +29,7 @@ executable elm-debugger
                      , containers
                      , cmdargs
                      , directory
-                     , Elm >= 0.12
+                     , Elm >= 0.13
                      , filepath
                      , HTTP
                      , mtl
