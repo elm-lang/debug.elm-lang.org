@@ -14,7 +14,7 @@ function hotSwap() {
         if (request.readyState === 4
             && request.status >= 200
             && request.status < 300) {
-            top.output.runningElmModule.debugger.hotSwap(request.responseText);
+            top.output.runningElmModule.debugger.swap(request.responseText);
         }
     };
     editor.save();
