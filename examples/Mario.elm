@@ -75,7 +75,11 @@ display (w',h') mario =
                 | mario.vx /= 0 -> "walk"
                 | otherwise     -> "stand"
 
-      src  = "imgs/mario/"++ verb ++ "/" ++ show mario.dir ++ ".gif"
+      dir = case mario.dir of
+              Left -> "left"
+              Right -> "right"
+
+      src  = "imgs/mario/"++ verb ++ "/" ++ dir ++ ".gif"
 
       marioImage = image 35 35 src
 
