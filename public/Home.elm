@@ -208,31 +208,38 @@ try video name =
 
 stamps w = width w [markdown|
 
+
+<div style="width: 640px; height: 200px;">
 <iframe width="640"
         height="200"
         src="//www.youtube.com/embed/zybahE0aQqA?rel=0&showinfo=0"
         frameborder="0"
         allowfullscreen></iframe>
+</div>
 
 |]
 
 mario w = width w [markdown|
 
+<div style="width: 640px; height: 200px;">
 <iframe width="640"
         height="200"
         src="//www.youtube.com/embed/RUeLd7T7Xi4?rel=0&showinfo=0"
         frameborder="0"
         allowfullscreen></iframe>
+</div>
 
 |]
 
 reverser w = width w [markdown|
 
+<div style="width: 640px; height: 200px;">
 <iframe width="640"
         height="200"
         src="//www.youtube.com/embed/Z9IRkGwlLlM?rel=0&showinfo=0"
         frameborder="0"
         allowfullscreen></iframe>
+</div>
 
 |]
 
@@ -410,11 +417,13 @@ visualized the entire signal graph, fully exposing the details of FRP.
  [talk]: https://www.youtube.com/watch?v=lK0vph1zR8s&list=PLrJ2mLJTxzXcBvJr5iZKetpeqHOJYJ8AW
  [workshop]: https://www.youtube.com/channel/UCzbnVYNyCwES9u3dqYZ-0WQ
 
+<div style="width: 640px; height: 360px;">
 <iframe width="640"
         height="360"
         src="//www.youtube.com/embed/lK0vph1zR8s"
         frameborder="0"
         allowfullscreen></iframe>
+</div>
 
 The talk itself is about 20 minutes, but we included the 20 minutes of Q&A
 because we felt it was really helpful in clarifying the limitations and future
