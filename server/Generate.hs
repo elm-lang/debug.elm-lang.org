@@ -19,6 +19,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 import qualified Elm.Internal.Utils as Elm
 import Utils
 
+
 -- | Using a page title and the full source of an Elm program, compile down to
 --   a valid HTML document.
 html :: String -> String -> IO H.Html
@@ -43,7 +44,8 @@ html name src =
         let moduleName = "Elm." ++ fromMaybe "Main" (Elm.moduleName src)
         in  "var runningElmModule = Elm.debugFullscreen(" ++  moduleName ++ ")"
 
-    buildPage content = H.docTypeHtml $ do
+    buildPage content =
+      H.docTypeHtml $ do
         H.head $ do
           H.meta ! A.charset "UTF-8"
           H.title . H.toHtml $ name
@@ -52,11 +54,13 @@ html name src =
                \a:visited {text-decoration: none}\n\
                \a:active {text-decoration: none}\n\
                \a:hover {text-decoration: underline; color: rgb(234,21,122);}" :: String)
+          googleAnalytics
+
         H.body $ do
           script ! A.src (H.toValue ("/elm-runtime.js" :: String)) $ ""
           script ! A.src (H.toValue ("/debugger.js" :: String)) $ ""
           content
-        googleAnalytics
+
 
 addSpaces :: String -> String
 addSpaces str =
@@ -65,6 +69,7 @@ addSpaces str =
     c : rest -> c : addSpaces rest
     [] -> []
 
+
 js :: String -> IO String
 js src =
   do output <- safeCompile src
@@ -72,6 +77,7 @@ js src =
   where
     wrap :: String -> String -> String
     wrap typ msg = "{ " ++ show typ ++ " : " ++ show msg ++ " }"
+
 
 safeCompile :: String -> IO (Either String String)
 safeCompile src =
@@ -82,6 +88,7 @@ safeCompile src =
           then compileInSandbox src
           else compileNormal src
 
+
 thirdPartyLibraries :: [String]
 thirdPartyLibraries =
     [ "Graphics.WebGL"
@@ -91,6 +98,7 @@ thirdPartyLibraries =
     , "Math.Vector4"
     ]
 
+
 compileNormal :: String -> IO (Either String String)
 compileNormal src =
   do output <- catchBugs (Elm.compile src)
@@ -98,10 +106,13 @@ compileNormal src =
   where
     explain problem = Left ("Error:\n" ++ problem)
 
+
 catchBugs :: a -> IO (Either String a)
-catchBugs inp = (Right <$> evaluate inp) `catches` handlers
+catchBugs inp =
+    (Right <$> evaluate inp) `catches` handlers
   where
     handlers = [ Handler (return . Left . show :: SomeException -> IO (Either String b)) ]
+
 
 compileInSandbox :: String -> IO (Either String String)
 compileInSandbox src =
