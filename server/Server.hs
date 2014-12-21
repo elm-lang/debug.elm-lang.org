@@ -8,9 +8,7 @@ import qualified Data.HashMap.Strict as Map
 import Control.Applicative
 import Control.Monad.Error
 
-import Text.Blaze.Html5 ((!))
 import qualified Text.Blaze.Html5 as H
-import qualified Text.Blaze.Html5.Attributes as A
 import qualified Text.Blaze.Html.Renderer.Utf8 as BlazeBS
 import qualified Text.Blaze.Html.Renderer.String as BlazeS
 
@@ -26,6 +24,7 @@ import GHC.Conc
 import qualified Elm.Internal.Paths as Elm
 import qualified Generate
 import qualified Editor
+import qualified Utils
 
 data Flags = Flags
   { port :: Int
@@ -162,7 +161,7 @@ adjustHtmlFile file =
   do src <- BSC.readFile file
      let (before, after) = BSC.breakSubstring "<title>" src
      BSC.writeFile (FP.replaceExtension file "elm") $
-        BSC.concat [before, style, after, analytics]
+        BSC.concat [before, analytics, style, after]
      removeFile file
 
 style :: BSC.ByteString
@@ -179,14 +178,5 @@ style =
 
 -- | Add analytics to a page.
 analytics :: BSC.ByteString
-analytics = BSC.pack . BlazeS.renderHtml $
-    H.script ! A.type_ "text/javascript" $
-         "var _gaq = _gaq || [];\n\
-         \_gaq.push(['_setAccount', 'UA-25827182-1']);\n\
-         \_gaq.push(['_setDomainName', 'elm-lang.org']);\n\
-         \_gaq.push(['_trackPageview']);\n\
-         \(function() {\n\
-         \  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;\n\
-         \  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n\
-         \  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);\n\
-         \})();"
+analytics =
+    BSC.pack (BlazeS.renderHtml Utils.googleAnalytics)
