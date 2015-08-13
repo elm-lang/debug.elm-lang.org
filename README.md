@@ -7,6 +7,12 @@ at [Elm Workshop 2013](https://www.youtube.com/channel/UCzbnVYNyCwES9u3dqYZ-0WQ/
 Since then it has been adopted by [the @elm-lang organization](https://github.com/elm-lang)
 to try to get it in shape for everyday use.
 
+Nowadays, the concepts from the debugger live on in
+[elm-reactor](https://github.com/elm-lang/elm-reactor), which is part of the
+[elm-platform](https://github.com/elm-lang/elm-platform).
+
+**You normally shouldn't need to build the debugger from this repo here anymore.**
+
 ### Build from source
 
 The server is written in Haskell, so first get the [Haskell
